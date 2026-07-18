@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# Next.js
+.next/
+out/
+
+# testing and generated output
+coverage/
+playwright-report/
+test-results/
+dist/
+
+# local configuration and platform links
+.env
+.env.*
+!.env.example
+.vercel/
+.superpowers/
+
+# local caches
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+
