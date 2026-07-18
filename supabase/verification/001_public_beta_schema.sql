@@ -5,7 +5,7 @@ do $$
 declare
   required_tables text[] := array[
     'exams', 'branches', 'exam_versions', 'subjects', 'sections', 'topics', 'exam_version_topics',
-    'profiles', 'workspace_preferences', 'study_sessions', 'syllabus_progress', 'pdfs', 'notes',
+    'profiles', 'workspace_preferences', 'study_sessions', 'syllabus_progress', 'pdfs', 'notes', 'pyq_attempts',
     'goals', 'reflections', 'revision_items', 'mistakes', 'notification_preferences',
     'push_subscriptions', 'notification_deliveries', 'offline_mutation_acks', 'invite_codes', 'invite_redemptions', 'circles',
     'circle_memberships', 'circle_invitations', 'circle_sessions', 'circle_check_ins'

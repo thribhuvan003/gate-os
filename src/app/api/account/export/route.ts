@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSupabaseClient } from "@/lib/supabase/server";
 
-const privateTables = ["profiles", "workspace_preferences", "study_sessions", "syllabus_progress", "pdfs", "notes", "goals", "reflections", "revision_items", "mistakes", "notification_preferences"] as const;
+const privateTables = ["profiles", "workspace_preferences", "study_sessions", "syllabus_progress", "pdfs", "notes", "pyq_attempts", "goals", "reflections", "revision_items", "mistakes", "notification_preferences"] as const;
 
 export async function GET() {
   const clientResult = await getServerSupabaseClient();

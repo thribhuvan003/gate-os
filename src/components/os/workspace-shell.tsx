@@ -8,9 +8,11 @@ import {
   Focus,
   Home,
   NotebookPen,
+  ClipboardCheck,
   Settings,
   Target,
   Users,
+  Send,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,12 +22,14 @@ const destinations = [
   { href: "/app", label: "Home", icon: Home },
   { href: "/app/focus", label: "Focus", icon: Focus },
   { href: "/app/syllabus", label: "Syllabus", icon: BookOpenText },
+  { href: "/app/pyqs", label: "PYQs", icon: ClipboardCheck },
   { href: "/app/vault", label: "Vault", icon: FileText },
   { href: "/app/notes", label: "Notes", icon: NotebookPen },
   { href: "/app/revision", label: "Revision", icon: Brain },
   { href: "/app/mistakes", label: "Mistakes", icon: CircleDot },
   { href: "/app/goals", label: "Goals", icon: Target },
   { href: "/app/circles", label: "Circles", icon: Users },
+  { href: "/app/handoff", label: "Handoff", icon: Send },
   { href: "/app/settings", label: "Settings", icon: Settings },
 ] as const;
 

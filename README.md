@@ -8,6 +8,7 @@ A private, personalized preparation workspace for GATE CS/IT 2027 aspirants.
 - Three-step onboarding with curated themes and layout preferences.
 - Accurate, recovery-safe focus timer.
 - Versioned syllabus baseline with topic and PYQ readiness.
+- Official-source PYQ desk with private attempt records and reflections.
 - Private 500 MB PDF vault with 50 MB per-file limit and PDF.js reader.
 - Notes with recovered local drafts, revision queue, mistake book, goals, and dated reflections.
 - Private study circles with expiring email-bound invitations.

@@ -7,7 +7,7 @@
   --surface: #fbfaf5;
   --surface-strong: #ffffff;
   --ink: #1b1f1b;
-  --muted: #6e716a;
+  --muted: #62665f;
   --line: rgba(34, 42, 35, 0.14);
   --accent: #244b36;
   --accent-soft: #dce7dc;
@@ -257,6 +257,12 @@ summary {
   width: min(100%, 1340px);
   margin-inline: auto;
   padding: clamp(1.25rem, 3vw, 2.75rem);
+  animation: workspace-enter 260ms cubic-bezier(.2,.75,.25,1) both;
+}
+
+@keyframes workspace-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .workspace-page-header,
@@ -365,7 +371,10 @@ legend { margin-bottom: .6rem; font-size: .78rem; font-weight: 700; color: var(-
 .syllabus-topic-control { display: flex; flex: 1; cursor: pointer; align-items: center; gap: .75rem; }
 .syllabus-topic-control input { position: absolute; opacity: 0; }
 .syllabus-topic-check { display: grid; width: 1.35rem; height: 1.35rem; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: transparent; }
-.syllabus-topic-control.is-complete { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--accent); }
+.syllabus-topic-control > span:last-child { position: relative; }
+.syllabus-topic-control > span:last-child::after { position: absolute; top: 52%; right: 0; left: 0; height: 1.5px; background: var(--accent); content: ""; transform: scaleX(0); transform-origin: left; transition: transform 240ms cubic-bezier(.2,.75,.25,1); }
+.syllabus-topic-control.is-complete { color: var(--muted); }
+.syllabus-topic-control.is-complete > span:last-child::after { transform: scaleX(1); }
 .syllabus-topic-control.is-complete .syllabus-topic-check { border-color: var(--accent); background: var(--accent); color: white; transform: scale(1.05); }
 .syllabus-pyq-button { border: 1px solid var(--line); border-radius: 999px; padding: .35rem .65rem; color: var(--muted); font-size: .7rem; }
 .syllabus-pyq-button.is-ready { border-color: var(--accent); color: var(--accent); }

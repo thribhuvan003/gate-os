@@ -188,6 +188,20 @@ create table public.notes (
   check ((kind <> 'daily') or note_date is not null)
 );
 
+create table public.pyq_attempts (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  year integer not null check (year between 1987 and 2100),
+  paper_variant text not null default 'CS' check (char_length(paper_variant) between 1 and 20),
+  status text not null default 'planned' check (status in ('planned', 'attempted', 'reviewed')),
+  score numeric(5,2) check (score between 0 and 100),
+  attempted_on date,
+  notes text check (char_length(notes) <= 8000),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (user_id, year, paper_variant)
+);
+
 create unique index notes_one_daily_note_per_user_date
   on public.notes (user_id, note_date)
   where kind = 'daily' and archived_at is null;
@@ -510,6 +524,16 @@ grant execute on function public.is_circle_owner(uuid, uuid) to authenticated;
 
 alter table public.invite_redemptions enable row level security;
 alter table public.notification_deliveries enable row level security;
+alter table public.pyq_attempts enable row level security;
+
+create policy "pyq attempts own active beta" on public.pyq_attempts
+for all to authenticated
+using (user_id = auth.uid() and public.is_active_beta_user())
+with check (user_id = auth.uid() and public.is_active_beta_user());
+
+create trigger pyq_attempts_set_updated_at
+before update on public.pyq_attempts
+for each row execute function public.set_updated_at();
 
 create or replace function public.validate_beta_invite(p_code text)
 returns table (invite_id uuid)
