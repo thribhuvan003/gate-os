@@ -1,4 +1,4 @@
--- Run after 202607180001_public_beta_schema.sql and 202607180002_seed_gate_2027_cs_it_catalog.sql.
+-- Run after all migrations in supabase/migrations.
 -- This is read-only verification SQL. It raises an exception when an invariant is missing.
 
 do $$
@@ -47,15 +47,16 @@ begin
   into missing_functions
   from unnest(required_functions) as required_function
   where to_regprocedure('public.' || required_function || '()') is null
-    and required_function not in ('is_active_beta_user', 'is_active_circle_member', 'is_circle_owner');
+    and required_function not in ('is_active_beta_user', 'is_active_circle_member', 'is_circle_owner', 'add_circle_owner_membership');
 
   if missing_functions is not null then
     raise exception 'Missing helper functions: %', missing_functions;
   end if;
 
-  if to_regprocedure('public.is_active_beta_user(uuid)') is null
-    or to_regprocedure('public.is_active_circle_member(uuid,uuid)') is null
-    or to_regprocedure('public.is_circle_owner(uuid,uuid)') is null then
+  if to_regprocedure('private.is_active_beta_user(uuid)') is null
+    or to_regprocedure('private.is_active_circle_member(uuid,uuid)') is null
+    or to_regprocedure('private.is_circle_owner(uuid,uuid)') is null
+    or to_regprocedure('private.add_circle_owner_membership()') is null then
     raise exception 'Missing parameterized RLS helper function';
   end if;
 
@@ -63,7 +64,7 @@ begin
     or to_regprocedure('public.consume_beta_invite(uuid)') is null
     or to_regprocedure('public.has_active_beta_access()') is null
     or to_regprocedure('public.accept_circle_invite(text)') is null
-    or to_regprocedure('public.enforce_beta_pdf_quota()') is null then
+    or to_regprocedure('private.enforce_beta_pdf_quota()') is null then
     raise exception 'Missing beta access, circle invitation, or PDF quota function';
   end if;
 end;

@@ -544,7 +544,7 @@ set search_path = public
 as $$
   select id
   from public.invite_codes
-  where code_hash = encode(digest(lower(trim(p_code)), 'sha256'), 'hex')
+  where code_hash = encode(extensions.digest(convert_to(lower(trim(p_code)), 'UTF8'), 'sha256'), 'hex')
     and revoked_at is null
     and (expires_at is null or expires_at > now())
     and use_count < max_uses
@@ -638,7 +638,7 @@ begin
   select email into current_email from auth.users where id = current_user_id;
   select * into invitation
   from public.circle_invitations
-  where token_hash = encode(digest(p_token, 'sha256'), 'hex')
+  where token_hash = encode(extensions.digest(convert_to(p_token, 'UTF8'), 'sha256'), 'hex')
     and accepted_at is null
     and revoked_at is null
     and expires_at > now()
