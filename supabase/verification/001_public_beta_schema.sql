@@ -77,6 +77,7 @@ declare
   bucket_size_limit bigint;
   catalog_topics integer;
   catalog_subjects integer;
+  citext_schema text;
 begin
   select count(*) into policy_count
   from pg_policies
@@ -93,6 +94,15 @@ begin
 
   if bucket_is_private is distinct from true or bucket_size_limit <> 52428800 then
     raise exception 'private-notes bucket is missing, public, or has an incorrect size limit';
+  end if;
+
+  select namespace.nspname into citext_schema
+  from pg_extension extension
+  join pg_namespace namespace on namespace.oid = extension.extnamespace
+  where extension.extname = 'citext';
+
+  if citext_schema is distinct from 'extensions' then
+    raise exception 'citext extension must be installed in the extensions schema';
   end if;
 
   select count(*) into catalog_subjects
