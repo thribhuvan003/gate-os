@@ -5,18 +5,14 @@ import { NextResponse, type NextRequest } from "next/server";
  * Next.js 16 "proxy" (the successor to middleware). Runs before every matched
  * route and:
  *   1. Refreshes the Supabase auth session cookie via the SSR client's
- *      getAll/setAll adapter (the canonical @supabase/ssr pattern). This is
- *      the ONLY place session cookies can be refreshed — Server Components
- *      cannot write cookies, so without this the /app layout would see a
- *      stale session and bounce valid users to /login.
+ *      getAll/setAll adapter (the canonical @supabase/ssr pattern).
  *   2. Protects /app, /onboarding, /welcome by redirecting unauthenticated
  *      visitors to /login?next=… so the deep-link is preserved.
  *
- * `auth.getUser()` is used (not getClaims()) because getUser() performs a
- * fresh network call to the Auth server and is the server-side source of
- * truth in @supabase/supabase-js v2. getClaims() is not reliably present
- * across v2 patch versions and caused a TypeError that broke protected
- * routes after Google sign-in.
+ * Uses auth.getUser() (canonical v2 server-side source of truth — a fresh
+ * network call to the Auth server). Mirrors the original getClaims() usage
+ * shape: read `data` then access the id via optional chaining so the union
+ * type narrows cleanly under strict mode.
  */
 export async function proxy(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -35,18 +31,15 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Fresh, server-confirmed user. getUser() makes a network call to the Auth
-  // server — the correct way to verify identity server-side in v2.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data } = await supabase.auth.getUser();
+  const userId = data?.user?.id;
 
   const protectedPath =
     request.nextUrl.pathname.startsWith("/app") ||
     request.nextUrl.pathname.startsWith("/onboarding") ||
     request.nextUrl.pathname.startsWith("/welcome");
 
-  if (protectedPath && !user?.id) {
+  if (protectedPath && !userId) {
     const login = new URL("/login", request.url);
     login.searchParams.set("next", `${request.nextUrl.pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(login);
