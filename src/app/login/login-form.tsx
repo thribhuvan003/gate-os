@@ -7,13 +7,14 @@ import { getBrowserSupabaseClient, getBrowserSupabaseSetupError } from "@/lib/su
 type LoginFormProps = {
   initialInviteCode: string;
   initialError: string;
+  nextPath: string;
 };
 
 type LoginStep = "start" | "email" | "code";
 
 const emailPattern = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
 
-export function LoginForm({ initialInviteCode, initialError }: LoginFormProps) {
+export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFormProps) {
   const setupError = useMemo(() => getBrowserSupabaseSetupError(), []);
   const [inviteCode, setInviteCode] = useState(initialInviteCode);
   const [email, setEmail] = useState("");
@@ -44,6 +45,12 @@ export function LoginForm({ initialInviteCode, initialError }: LoginFormProps) {
     return true;
   }
 
+  function callbackUrl() {
+    const url = new URL("/auth/callback", window.location.origin);
+    url.searchParams.set("next", nextPath);
+    return url.toString();
+  }
+
   async function startGoogle() {
     setMessage("");
     setIsWorking(true);
@@ -62,7 +69,7 @@ export function LoginForm({ initialInviteCode, initialError }: LoginFormProps) {
 
       const { data, error } = await clientResult.value.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: `${window.location.origin}/auth/callback` },
+        options: { redirectTo: callbackUrl() },
       });
 
       if (error || !data.url) {
@@ -105,7 +112,7 @@ export function LoginForm({ initialInviteCode, initialError }: LoginFormProps) {
         email: email.trim(),
         options: {
           shouldCreateUser: Boolean(inviteCode.trim()),
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: callbackUrl(),
         },
       });
 
@@ -153,7 +160,7 @@ export function LoginForm({ initialInviteCode, initialError }: LoginFormProps) {
         return;
       }
 
-      window.location.assign("/auth/callback");
+      window.location.assign(callbackUrl());
     } catch {
       setMessage("We could not verify that code. Please try again.");
     } finally {

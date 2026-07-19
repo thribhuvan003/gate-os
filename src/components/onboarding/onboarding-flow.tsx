@@ -12,7 +12,7 @@ const themes = [
   { id: "midnight-paper", name: "Midnight Paper", colors: ["#141719", "#e7b45b", "#f2ede1"] },
 ] as const;
 
-export function OnboardingFlow() {
+export function OnboardingFlow({ nextPath }: { nextPath: string }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [pending, setPending] = useState(false);
@@ -53,7 +53,7 @@ export function OnboardingFlow() {
       const response = await fetch("/api/onboarding", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       const result = (await response.json()) as { ok?: boolean; message?: string };
       if (!response.ok || !result.ok) throw new Error(result.message || "Could not save your space.");
-      router.push("/welcome");
+      router.push(`/welcome?next=${encodeURIComponent(nextPath)}`);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not save your space.");
     } finally {

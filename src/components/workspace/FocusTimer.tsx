@@ -96,6 +96,15 @@ export function FocusTimer({ initialDurationSeconds = 25 * 60, subjectOptions = 
     setElapsedSeconds(Math.min(accumulatedRef.current, durationSeconds));
     setStatus("paused");
   };
+  const finish = () => {
+    startedAtRef.current = null;
+    if (elapsedSeconds === 0) {
+      reset();
+      return;
+    }
+    accumulatedRef.current = elapsedSeconds;
+    setStatus("complete");
+  };
   const reset = () => {
     startedAtRef.current = null;
     accumulatedRef.current = 0;
@@ -116,13 +125,13 @@ export function FocusTimer({ initialDurationSeconds = 25 * 60, subjectOptions = 
     <section className="workspace-page focus-timer" aria-labelledby="focus-title">
       <header className="workspace-page-header"><div><p className="workspace-eyebrow"><TimerReset aria-hidden="true" /> Focus</p><h1 id="focus-title">Make the next block matter.</h1><p>Choose a clear target, then stay with it.</p></div></header>
       <div className="focus-timer-layout">
-        <section className="focus-timer-display" aria-live="polite" aria-atomic="true">
-          <p>{status === "complete" ? "Session complete" : status === "paused" ? "Paused" : status === "running" ? "In focus" : "Ready when you are"}</p>
+        <section className="focus-timer-display">
+          <p role="status" aria-live="polite" aria-atomic="true">{status === "complete" ? "Session complete" : status === "paused" ? "Paused" : status === "running" ? "In focus" : "Ready when you are"}</p>
           <output aria-label={`${remaining} seconds remaining`}>{formattedTime}</output>
           <div className="focus-timer-actions">
             {status === "running" ? <button className="workspace-primary-button" type="button" onClick={pause}><Pause aria-hidden="true" /> Pause</button> : <button className="workspace-primary-button" type="button" onClick={start} disabled={status === "complete"}><Play aria-hidden="true" /> {status === "paused" ? "Resume" : "Begin focus"}</button>}
             <button className="workspace-secondary-button" type="button" onClick={reset}><RotateCcw aria-hidden="true" /> Reset</button>
-            {status !== "idle" ? <button className="workspace-text-button" type="button" onClick={reset}><Square aria-hidden="true" /> End session</button> : null}
+            {status !== "idle" && status !== "complete" ? <button className="workspace-text-button" type="button" onClick={finish}><Square aria-hidden="true" /> Finish &amp; save</button> : null}
           </div>
         </section>
         <form className="focus-timer-setup" onSubmit={(event) => { event.preventDefault(); start(); }}>

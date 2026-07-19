@@ -63,6 +63,19 @@
   --signal: #e7b45b;
 }
 
+[data-accent="indigo"] { --accent: #3f51b5; --accent-soft: #e6e9fb; }
+[data-accent="terracotta"] { --accent: #a24f36; --accent-soft: #f7e3da; }
+[data-accent="forest"] { --accent: #244b36; --accent-soft: #dce7dc; }
+[data-accent="plum"] { --accent: #713f6d; --accent-soft: #f0e3ef; }
+[data-font-pair="modern"] { --font-display: var(--font-dm-sans); --font-body: var(--font-dm-sans); }
+[data-font-pair="humanist"] { --font-display: var(--font-dm-sans); --font-body: var(--font-instrument); }
+
+[data-density="compact"] .workspace-page { padding: clamp(1rem, 2.25vw, 2rem); }
+[data-density="compact"] .workspace-page-header { margin-bottom: 1.35rem; }
+[data-density="compact"] .workspace-panel, [data-density="compact"] .workspace-composer, [data-density="compact"] .mistake-card, [data-density="compact"] .circle-detail, [data-density="compact"] .settings-section { padding: clamp(.95rem, 2.25vw, 1.35rem); }
+[data-motion="subtle"] .workspace-page { animation-duration: 180ms; }
+[data-motion="reduced"] *, [data-motion="reduced"] *::before, [data-motion="reduced"] *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+
 * {
   box-sizing: border-box;
 }
@@ -373,6 +386,8 @@ legend { margin-bottom: .6rem; font-size: .78rem; font-weight: 700; color: var(-
 .syllabus-topic-control { display: flex; flex: 1; cursor: pointer; align-items: center; gap: .75rem; }
 .syllabus-topic-control input { position: absolute; opacity: 0; }
 .syllabus-topic-check { display: grid; width: 1.35rem; height: 1.35rem; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: transparent; }
+.syllabus-topic-control input:focus-visible + .syllabus-topic-check,
+.workspace-checkbox-row input:focus-visible + .workspace-check-indicator { outline: 3px solid color-mix(in srgb, var(--accent) 72%, white); outline-offset: 3px; }
 .syllabus-topic-control > span:last-child { position: relative; }
 .syllabus-topic-control > span:last-child::after { position: absolute; top: 52%; right: 0; left: 0; height: 1.5px; background: var(--accent); content: ""; transform: scaleX(0); transform-origin: left; transition: transform 240ms cubic-bezier(.2,.75,.25,1); }
 .syllabus-topic-control.is-complete { color: var(--muted); }

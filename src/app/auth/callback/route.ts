@@ -14,7 +14,9 @@ export const runtime = "nodejs";
 function loginRedirect(request: NextRequest, error: string): NextResponse {
   const url = new URL("/login", request.url);
   url.searchParams.set("error", error);
-  return NextResponse.redirect(url);
+  const response = NextResponse.redirect(url);
+  response.cookies.delete(inviteCookieName);
+  return response;
 }
 
 export async function GET(request: NextRequest) {
@@ -61,9 +63,10 @@ export async function GET(request: NextRequest) {
     .select("onboarding_completed_at")
     .eq("id", userId)
     .maybeSingle();
+  const nextPath = safeNextPath(request.nextUrl.searchParams.get("next"));
   const destination = profile?.onboarding_completed_at
-    ? safeNextPath(request.nextUrl.searchParams.get("next"))
-    : "/onboarding";
+    ? nextPath
+    : `/onboarding?next=${encodeURIComponent(nextPath)}`;
   const response = NextResponse.redirect(new URL(destination, request.url));
   response.cookies.delete(inviteCookieName);
   return response;

@@ -12,20 +12,42 @@ export default async function WorkspaceHome() {
   let displayName = "Aspirant";
   let currentSubject = "Choose your first subject";
   let weeklyCommitment = "Write one clear promise for this week.";
+  let dueRevisionCount = 0;
+  let completedTopicCount = 0;
+  let totalTopicCount = 0;
+  let focusedSecondsToday = 0;
   if (clientResult.value) {
     const { data: authData } = await clientResult.value.auth.getClaims();
     const userId = authData?.claims?.sub;
     if (userId) {
-      const [{ data: profile }, { data: goal }] = await Promise.all([
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      const [{ data: profile }, { data: goal }, { count: revisionCount }, { data: versionData }, { data: sessions }] = await Promise.all([
         clientResult.value.from("profiles").select("display_name,preferred_study_window").eq("id", userId).maybeSingle(),
         clientResult.value.from("goals").select("title").eq("user_id", userId).eq("period", "weekly").is("completed_at", null).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+        clientResult.value.from("revision_items").select("id", { count: "exact", head: true }).lte("due_on", new Date().toISOString().slice(0, 10)).is("completed_at", null),
+        clientResult.value.from("exam_versions").select("id").eq("year", 2027).maybeSingle(),
+        clientResult.value.from("study_sessions").select("elapsed_seconds").eq("status", "completed").gte("ended_at", startOfToday.toISOString()),
       ]);
       displayName = profile?.display_name ?? displayName;
       const windowData = profile?.preferred_study_window as { currentSubject?: string } | null;
       currentSubject = windowData?.currentSubject ?? currentSubject;
       weeklyCommitment = goal?.title ?? weeklyCommitment;
+      dueRevisionCount = revisionCount ?? 0;
+      focusedSecondsToday = (sessions ?? []).reduce((total, session) => total + (session.elapsed_seconds ?? 0), 0);
+
+      if (versionData?.id) {
+        const [{ count: progressCount }, { count: catalogCount }] = await Promise.all([
+          clientResult.value.from("syllabus_progress").select("id", { count: "exact", head: true }).eq("exam_version_id", versionData.id).not("completed_at", "is", null),
+          clientResult.value.from("exam_version_topics").select("topic_id", { count: "exact", head: true }).eq("exam_version_id", versionData.id),
+        ]);
+        completedTopicCount = progressCount ?? 0;
+        totalTopicCount = catalogCount ?? 0;
+      }
     }
   }
+  const syllabusPercent = totalTopicCount ? Math.round((completedTopicCount / totalTopicCount) * 100) : 0;
+  const focusedMinutesToday = Math.round(focusedSecondsToday / 60);
 
   return (
     <div className="mx-auto max-w-[1340px] px-4 py-6 sm:px-8 sm:py-10">
@@ -62,20 +84,20 @@ export default async function WorkspaceHome() {
       <section className="mt-4 grid gap-4 lg:grid-cols-3">
         <article className="surface-card p-6">
           <div className="flex items-center justify-between"><p className="mono-label">Due for revision</p><RotateCcw size={17} className="text-[var(--accent)]" /></div>
-          <p className="display-type mt-7 text-5xl">0</p>
-          <p className="mt-2 text-sm text-[var(--muted)]">items — add one after your first session</p>
+          <p className="display-type mt-7 text-5xl">{dueRevisionCount}</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">{dueRevisionCount === 1 ? "item" : "items"} {dueRevisionCount ? "ready to revisit" : "— add one after your first session"}</p>
           <Link className="secondary-button mt-6 inline-flex" href="/app/revision">Open queue</Link>
         </article>
         <article className="surface-card p-6">
           <div className="flex items-center justify-between"><p className="mono-label">Syllabus</p><BookOpen size={17} className="text-[var(--accent)]" /></div>
-          <p className="display-type mt-7 text-5xl">0%</p>
-          <p className="mt-2 text-sm text-[var(--muted)]">begins empty — progress is earned</p>
+          <p className="display-type mt-7 text-5xl">{syllabusPercent}%</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">{completedTopicCount} / {totalTopicCount || "—"} topics complete</p>
           <Link className="secondary-button mt-6 inline-flex" href="/app/syllabus">Choose a topic</Link>
         </article>
         <article className="surface-card p-6">
           <div className="flex items-center justify-between"><p className="mono-label">Today</p><Check size={17} className="text-[var(--accent)]" /></div>
-          <p className="display-type mt-7 text-5xl">0m</p>
-          <p className="mt-2 text-sm text-[var(--muted)]">your first focused minute starts now</p>
+          <p className="display-type mt-7 text-5xl">{focusedMinutesToday}m</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">{focusedMinutesToday ? "focused today" : "your first focused minute starts now"}</p>
           <Link className="secondary-button mt-6 inline-flex" href="/app/focus">Begin</Link>
         </article>
       </section>

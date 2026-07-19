@@ -149,5 +149,17 @@ export async function hasActiveBetaAccess(): Promise<{ active: boolean; error: s
 }
 
 export function safeNextPath(value: string | null): string {
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/app";
+  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) {
+    return "/app";
+  }
+
+  try {
+    const origin = "https://gate-os.local";
+    const target = new URL(value, origin);
+    return target.origin === origin && target.pathname.startsWith("/") && !target.pathname.startsWith("//")
+      ? `${target.pathname}${target.search}${target.hash}`
+      : "/app";
+  } catch {
+    return "/app";
+  }
 }

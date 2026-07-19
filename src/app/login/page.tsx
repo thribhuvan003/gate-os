@@ -1,7 +1,8 @@
 import { LoginForm } from "./login-form";
+import { safeNextPath } from "@/lib/auth/invite";
 
 type LoginPageProps = {
-  searchParams: Promise<{ code?: string | string[]; error?: string | string[] }>;
+  searchParams: Promise<{ code?: string | string[]; error?: string | string[]; next?: string | string[] }>;
 };
 
 const errorCopy: Record<string, string> = {
@@ -19,6 +20,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const code = firstValue(params.code).slice(0, 96);
   const error = errorCopy[firstValue(params.error)] ?? "";
+  const nextPath = safeNextPath(firstValue(params.next) || null);
 
-  return <LoginForm initialInviteCode={code} initialError={error} />;
+  return <LoginForm initialInviteCode={code} initialError={error} nextPath={nextPath} />;
 }

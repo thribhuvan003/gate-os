@@ -21,7 +21,7 @@ export async function proxy(request: NextRequest) {
   const protectedPath = request.nextUrl.pathname.startsWith("/app") || request.nextUrl.pathname.startsWith("/onboarding") || request.nextUrl.pathname.startsWith("/welcome");
   if (protectedPath && !data?.claims?.sub) {
     const login = new URL("/login", request.url);
-    login.searchParams.set("next", request.nextUrl.pathname);
+    login.searchParams.set("next", `${request.nextUrl.pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(login);
   }
   return response;
