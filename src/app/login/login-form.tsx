@@ -69,7 +69,7 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
 
       const { data, error } = await clientResult.value.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: callbackUrl() },
+        options: { redirectTo: callbackUrl(), queryParams: { prompt: "select_account" } },
       });
 
       if (error || !data.url) {
