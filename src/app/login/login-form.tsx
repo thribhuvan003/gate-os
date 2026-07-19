@@ -12,7 +12,7 @@ type LoginFormProps = {
 
 type LoginStep = "start" | "email" | "code";
 
-const emailPattern = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFormProps) {
   const setupError = useMemo(() => getBrowserSupabaseSetupError(), []);
@@ -134,7 +134,7 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
     event.preventDefault();
     setMessage("");
 
-    if (!/^\\d{6}$/.test(otp)) {
+    if (!/^\d{6}$/.test(otp)) {
       setMessage("Enter the six digits from your email.");
       return;
     }
@@ -218,7 +218,7 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
           <form className="mt-6 space-y-4" onSubmit={verifyEmailCode} noValidate>
             <div>
               <label htmlFor="otp" className="block text-sm font-medium text-[#29433e]">Six-digit code</label>
-              <input id="otp" name="otp" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={otp} onChange={(event) => setOtp(event.target.value.replace(/\\D/g, ""))} disabled={disabled} placeholder="000000" className="mt-2 min-h-12 w-full rounded-xl border border-[#c8d6d0] bg-white px-3 text-center font-mono text-xl tracking-[0.45em] outline-none transition placeholder:tracking-normal placeholder:text-[#84928f] focus:border-[#176558] focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60" aria-describedby="otp-help" />
+              <input id="otp" name="otp" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))} disabled={disabled} placeholder="000000" className="mt-2 min-h-12 w-full rounded-xl border border-[#c8d6d0] bg-white px-3 text-center font-mono text-xl tracking-[0.45em] outline-none transition placeholder:tracking-normal placeholder:text-[#84928f] focus:border-[#176558] focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60" aria-describedby="otp-help" />
               <p id="otp-help" className="mt-2 text-sm text-[#61706d]">Sent to {email}.</p>
             </div>
             <button type="submit" disabled={disabled} className="min-h-12 w-full rounded-xl bg-[#183f3b] px-4 text-base font-semibold text-white transition hover:bg-[#0e302c] focus:outline-none focus:ring-4 focus:ring-[#9bcfc0] disabled:cursor-not-allowed disabled:opacity-60">{isWorking ? "Verifying…" : "Enter my workspace"}</button>
