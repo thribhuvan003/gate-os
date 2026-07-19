@@ -39,6 +39,12 @@ export default async function SyllabusPage() {
         ? await clientResult.value.from("topics").select("id,section_id,name,position").in("section_id", sectionIds).order("position")
         : { data: [] };
       const topics = (topicData ?? []) as TopicRow[];
+      const { data: versionTopicData } = await clientResult.value
+        .from("exam_version_topics")
+        .select("topic_id")
+        .eq("exam_version_id", version.id);
+      const versionTopicIds = new Set(((versionTopicData ?? []) as { topic_id: string }[]).map((row) => row.topic_id));
+      const filterToVersion = versionTopicIds.size > 0;
       const { data: progressData } = await clientResult.value
         .from("syllabus_progress")
         .select("topic_id,completed_at,pyq_ready_at")
@@ -59,7 +65,7 @@ export default async function SyllabusPage() {
             id: section.id,
             title: section.name,
             topics: topics
-              .filter((topic) => topic.section_id === section.id)
+              .filter((topic) => topic.section_id === section.id && (!filterToVersion || versionTopicIds.has(topic.id)))
               .map((topic) => {
                 const progress = progressByTopic.get(topic.id);
                 return {
@@ -69,7 +75,8 @@ export default async function SyllabusPage() {
                   pyqReady: Boolean(progress?.pyq_ready_at),
                 };
               }),
-          })),
+          }))
+          .filter((section) => section.topics.length > 0),
       }));
     }
   }

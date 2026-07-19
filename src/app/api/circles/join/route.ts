@@ -33,7 +33,16 @@ export async function POST(request: NextRequest) {
   const { error } = await clientResult.value.rpc("accept_circle_invite", { p_token: token });
 
   if (error) {
-    return NextResponse.json({ message: "This invitation has expired, was already used, or is no longer available." }, { status: 400 });
+    const needsBetaAccess = /beta access/i.test(error.message ?? "");
+
+    return NextResponse.json(
+      {
+        message: needsBetaAccess
+          ? "Your account does not have active beta access yet. Redeem a beta invitation code at sign-in, then open this link again."
+          : "This invitation has expired, was already used, or is no longer available.",
+      },
+      { status: needsBetaAccess ? 403 : 400 },
+    );
   }
 
   return NextResponse.json({ ok: true });

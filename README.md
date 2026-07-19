@@ -43,6 +43,10 @@ pnpm test:e2e
 
 Database verification SQL lives in `supabase/verification`. The product and security specification is `docs/product/gate-os-v1-design.md`.
 
+## Deployment
+
+The complete production checklist (Vercel env vars, Supabase auth/URL/SMTP/email-template configuration, Resend, cron, smoke tests) lives in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+
 ## Deployment Order
 
 1. Create a new Supabase project; never reuse a personal prototype project.

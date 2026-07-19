@@ -1,7 +1,12 @@
 import { FocusClient } from "@/components/os/focus-client";
+import { getServerSupabaseClient } from "@/lib/supabase/server";
 
-const subjects = ["Engineering Mathematics", "Digital Logic", "COA", "Programming & Data Structures", "Algorithms", "Theory of Computation", "Compiler Design", "Operating Systems", "Databases", "Computer Networks"];
-
-export default function FocusPage() {
+export default async function FocusPage() {
+  const clientResult = await getServerSupabaseClient();
+  let subjects: { id: string; name: string }[] = [];
+  if (clientResult.value) {
+    const { data } = await clientResult.value.from("subjects").select("id,name").order("position");
+    subjects = (data ?? []) as { id: string; name: string }[];
+  }
   return <FocusClient subjects={subjects} />;
 }

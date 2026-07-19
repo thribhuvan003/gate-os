@@ -26,10 +26,10 @@ export function NotesClient({ initialNotes }: { initialNotes: NoteItem[] }) {
     if (!setup.value) return;
     const { data: authData } = await setup.value.auth.getUser();
     if (!authData.user) return;
-    const payload = { title: note.title, content: { plainText: note.content }, kind: note.kind ?? "topic", note_date: note.kind === "daily" ? new Date().toISOString().slice(0, 10) : null, version: 1 };
+    const base = { title: note.title, content: { plainText: note.content }, kind: note.kind ?? "topic" };
     const result = note.id.startsWith("draft-")
-      ? await setup.value.from("notes").insert({ ...payload, user_id: authData.user.id }).select("id").single()
-      : await setup.value.from("notes").update(payload).eq("id", note.id).select("id").single();
+      ? await setup.value.from("notes").insert({ ...base, note_date: note.kind === "daily" ? new Date().toISOString().slice(0, 10) : null, version: 1, user_id: authData.user.id }).select("id").single()
+      : await setup.value.from("notes").update(base).eq("id", note.id).select("id").single();
     if (result.error || !result.data) {
       setNotes((current) => current.map((item) => item.id === note.id ? { ...item, updatedLabel: "Recovered draft · sync failed" } : item));
       return;

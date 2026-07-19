@@ -40,7 +40,7 @@ export function PdfReader({ id, title, url, initialPage }: { id: string; title: 
         </div>
       </header>
       <div ref={containerRef} className="grid flex-1 place-items-start overflow-auto p-3 sm:p-6">
-        <Document file={url} onLoadSuccess={({ numPages }) => { setPages(numPages); setPage((value) => Math.min(value, numPages)); }} loading={<p className="p-10 text-white/60">Opening your PDF…</p>} error={<p className="rounded-xl bg-red-950 p-5">This PDF could not be opened.</p>}>
+        <Document file={url} onLoadSuccess={({ numPages }) => { setPages(numPages); setPage((value) => Math.max(1, Math.min(value, Math.max(1, numPages)))); }} loading={<p className="p-10 text-white/60">Opening your PDF…</p>} error={<p className="rounded-xl bg-red-950 p-5">This PDF could not be opened.</p>}>
           <Page pageNumber={page} width={width} renderAnnotationLayer renderTextLayer />
         </Document>
       </div>

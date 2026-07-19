@@ -20,8 +20,11 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
   const clientResult = await getServerSupabaseClient();
 
   if (clientResult.value) {
-    const { data: authData } = await clientResult.value.auth.getClaims();
-    const userId = authData?.claims?.sub;
+    // getUser() is the server-side source of truth (fresh network call to the
+    // Auth server). Replaces getClaims(), which is not reliably available
+    // across @supabase/supabase-js v2 patch versions.
+    const { data: userData } = await clientResult.value.auth.getUser();
+    const userId = userData.user?.id;
 
     if (userId) {
       const { data: profile } = await clientResult.value

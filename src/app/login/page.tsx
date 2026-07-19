@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
+
 import { LoginForm } from "./login-form";
 import { safeNextPath } from "@/lib/auth/invite";
+
+export const metadata: Metadata = {
+  title: "Sign in",
+};
 
 type LoginPageProps = {
   searchParams: Promise<{ code?: string | string[]; error?: string | string[]; next?: string | string[] }>;

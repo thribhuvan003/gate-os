@@ -7,9 +7,13 @@ import { getBrowserSupabaseClient } from "@/lib/supabase/client";
 export function RevisionClient({ initialItems }: { initialItems: RevisionItem[] }) {
   const [items, setItems] = useState(initialItems);
   async function update(item: RevisionItem, values: Record<string, unknown>, local: Partial<RevisionItem>) {
+    const previous = items;
     setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, ...local } : entry));
     const setup = await getBrowserSupabaseClient();
-    if (setup.value) await setup.value.from("revision_items").update(values).eq("id", item.id);
+    const error = setup.value
+      ? (await setup.value.from("revision_items").update(values).eq("id", item.id)).error
+      : { message: setup.error ?? "Not signed in." };
+    if (error) setItems(previous);
   }
   function complete(item: RevisionItem) { void update(item, { completed_at: new Date().toISOString(), status: "completed" }, { completed: true }); }
   function reschedule(item: RevisionItem) {

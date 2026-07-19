@@ -14,6 +14,20 @@ type LoginStep = "start" | "email" | "code";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+function friendlyOtpError(raw: string): string {
+  const normalized = raw.toLowerCase();
+
+  if (normalized.includes("signups not allowed")) {
+    return "This email does not have a GATE OS account yet. Paste your beta invitation code above, then request the code again.";
+  }
+
+  if (normalized.includes("rate limit") || normalized.includes("too many")) {
+    return "Too many email requests in a short window. Wait a couple of minutes, then try again.";
+  }
+
+  return raw;
+}
+
 export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFormProps) {
   const setupError = useMemo(() => getBrowserSupabaseSetupError(), []);
   const [inviteCode, setInviteCode] = useState(initialInviteCode);
@@ -117,12 +131,12 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
       });
 
       if (error) {
-        setMessage(error.message);
+        setMessage(friendlyOtpError(error.message));
         return;
       }
 
       setStep("code");
-      setMessage(`A six-digit code was sent to ${email.trim()}.`);
+      setMessage(`We emailed ${email.trim()}. Enter the six-digit code — or tap the sign-in link inside that email.`);
     } catch {
       setMessage("We could not send a code. Check your connection and try again.");
     } finally {
