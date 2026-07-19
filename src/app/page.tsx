@@ -1,6 +1,5 @@
-import { ArrowRight, BookOpen, CircleCheck, Clock3, LockKeyhole, Users } from "lucide-react";
+import { ArrowRight, BookOpen, CircleCheck, Clock3, LockKeyhole, Sparkles, Target, Users } from "lucide-react";
 import Link from "next/link";
-import { InviteEntry } from "@/components/landing/invite-entry";
 import { InteractivePreview } from "@/components/landing/interactive-preview";
 
 const productPillars = [
@@ -27,29 +26,62 @@ const productPillars = [
   },
 ];
 
+const quietFeatures = [
+  { icon: Target, label: "One intention per block" },
+  { icon: BookOpen, label: "Syllabus, PYQs & notes linked" },
+  { icon: LockKeyhole, label: "Private by default" },
+  { icon: Users, label: "Circles that protect your data" },
+  { icon: Clock3, label: "Built for the 27-day rhythm" },
+  { icon: Sparkles, label: "Calm, not a dashboard" },
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "GATE OS",
+  url: "https://gateeee.vercel.app",
+  applicationCategory: "EducationalApplication",
+  operatingSystem: "Web",
+  description: "A private, personal operating system for GATE CS & IT 2027 preparation.",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+};
+
 export default function LandingPage() {
   return (
-    <main id="main-content" className="min-h-screen overflow-hidden px-4 pb-16 sm:px-6 lg:px-10">
-      <header className="mx-auto flex max-w-[1480px] items-center justify-between py-5 sm:py-7">
+    <main id="main-content" className="landing min-h-screen overflow-hidden px-4 pb-16 sm:px-6 lg:px-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+
+      <div className="mx-auto flex max-w-[1480px] flex-wrap items-center justify-center gap-x-3 gap-y-1 pt-4 text-center text-xs text-[var(--muted)] sm:pt-5">
+        <span className="mono-label text-[var(--accent)]">Free private workspace</span>
+        <span aria-hidden="true">·</span>
+        <span>Built for GATE CS &amp; IT 2027 aspirants</span>
+        <span aria-hidden="true">·</span>
+        <span>Google or email signup</span>
+      </div>
+
+      <header className="landing-header mx-auto flex max-w-[1480px] items-center justify-between py-5 sm:py-7">
         <Link className="flex min-h-11 items-center gap-3" href="/" aria-label="GATE OS home">
-          <span className="grid size-9 place-items-center rounded-full bg-[var(--accent)] text-[var(--paper)]">
+          <span className="grid size-9 place-items-center rounded-full bg-[var(--accent)] text-[var(--paper)]" aria-hidden="true">
             <CircleCheck aria-hidden="true" size={18} />
           </span>
           <span className="font-bold tracking-[-0.03em]">GATE OS</span>
         </Link>
-        <div className="flex items-center gap-2">
+        <nav className="flex items-center gap-2" aria-label="Primary">
           <Link className="quiet-button hidden sm:inline-flex" href="#preview">
             Preview space
+          </Link>
+          <Link className="quiet-button hidden sm:inline-flex" href="#how">
+            How it works
           </Link>
           <Link className="secondary-button" href="/login">
             Sign in
           </Link>
-        </div>
+        </nav>
       </header>
 
       <section className="mx-auto grid min-h-[78vh] max-w-[1480px] items-center gap-12 py-10 lg:grid-cols-[1.03fr_.97fr] lg:py-16">
         <div className="reveal-up max-w-3xl">
-          <p className="mono-label mb-6 text-[var(--accent)]">Private beta · GATE CS &amp; IT 2027</p>
+          <p className="mono-label mb-6 text-[var(--accent)]">Open now · GATE CS &amp; IT 2027</p>
           <h1 className="display-type text-[clamp(3.35rem,9.5vw,9.4rem)] leading-[.84] sm:leading-[.8]">
             Your preparation,
             <span className="block italic text-[var(--accent)]">in one space.</span>
@@ -58,11 +90,11 @@ export default function LandingPage() {
             GATE OS is the private study workspace that feels like your own website—focused, calm, and built around how you prepare every day.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link className="primary-button" href="#invite">
-              Enter invite code <ArrowRight aria-hidden="true" size={17} />
+            <Link className="primary-button" href="/login">
+              Create my free workspace <ArrowRight aria-hidden="true" size={17} />
             </Link>
-            <Link className="quiet-button" href="/login">
-              I already have an account
+            <Link className="quiet-button" href="#preview">
+              Try the interactive preview
             </Link>
           </div>
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-[var(--muted)]">
@@ -75,32 +107,93 @@ export default function LandingPage() {
         <InteractivePreview />
       </section>
 
-      <section id="invite" className="mx-auto max-w-[1480px] scroll-mt-6 py-10 sm:py-16" aria-labelledby="beta-title">
+      <section id="start" className="mx-auto max-w-[1480px] scroll-mt-6 py-10 sm:py-16" aria-labelledby="start-title">
         <div className="grid gap-8 border-y border-[var(--line)] py-10 lg:grid-cols-[.8fr_1.2fr] lg:py-16">
           <div>
-            <p className="mono-label text-[var(--accent)]">Founding beta</p>
-            <h2 id="beta-title" className="display-type mt-3 max-w-lg text-6xl leading-[.9] sm:text-7xl">Make the space yours.</h2>
+            <p className="mono-label text-[var(--accent)]">Your account, your data</p>
+            <h2 id="start-title" className="display-type mt-3 max-w-lg text-6xl leading-[.9] sm:text-7xl">Make the space yours.</h2>
           </div>
           <div>
-            <p className="max-w-2xl text-lg leading-8 text-[var(--muted)]">We are opening GATE OS carefully to the first group of serious aspirants. Enter your invite code to create a private workspace.</p>
-            <InviteEntry />
+            <p className="max-w-2xl text-lg leading-8 text-[var(--muted)]">Create an account with Google or email. Your progress, notes, goals, sessions, and private PDFs follow you across every device where you sign in.</p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link className="primary-button" href="/login">Create free workspace <ArrowRight aria-hidden="true" size={17} /></Link>
+              <Link className="secondary-button" href="/login">Sign in</Link>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1480px] gap-4 py-10 md:grid-cols-3 sm:py-16">
-        {productPillars.map(({ icon: Icon, title, copy, href, action }, index) => (
-          <article className="surface-card min-h-64 p-6 sm:p-8" key={title}>
-            <div className="flex items-center justify-between">
-              <span className="grid size-11 place-items-center rounded-full border border-[var(--line)]"><Icon aria-hidden="true" size={19} /></span>
-              <span className="mono-label text-[var(--muted)]">0{index + 1}</span>
-            </div>
-            <h3 className="display-type mt-12 text-4xl leading-none">{title}</h3>
-            <p className="mt-4 leading-7 text-[var(--muted)]">{copy}</p>
-            <Link className="quiet-button mt-5 !px-0 text-sm" href={href}>{action} <ArrowRight aria-hidden="true" size={16} /></Link>
-          </article>
-        ))}
+      <section id="how" className="mx-auto max-w-[1480px] scroll-mt-6 py-10 sm:py-16" aria-labelledby="how-title">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-4 sm:mb-14">
+          <div className="max-w-xl">
+            <p className="mono-label text-[var(--accent)]">How it works</p>
+            <h2 id="how-title" className="display-type mt-3 text-5xl leading-[.92] sm:text-6xl">Three quiet habits, one calm space.</h2>
+          </div>
+          <p className="max-w-sm leading-7 text-[var(--muted)]">
+            Every part of GATE OS points you to the single most useful next action — and keeps the rest out of your way.
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {productPillars.map(({ icon: Icon, title, copy, href, action }, index) => (
+            <article className="surface-card group min-h-64 p-6 transition-transform duration-200 hover:-translate-y-1 sm:p-8" key={title}>
+              <div className="flex items-center justify-between">
+                <span className="grid size-11 place-items-center rounded-full border border-[var(--line)]"><Icon aria-hidden="true" size={19} /></span>
+                <span className="mono-label text-[var(--muted)]">0{index + 1}</span>
+              </div>
+              <h3 className="display-type mt-12 text-4xl leading-none">{title}</h3>
+              <p className="mt-4 leading-7 text-[var(--muted)]">{copy}</p>
+              <Link className="quiet-button mt-5 !px-0 text-sm" href={href}>{action} <ArrowRight aria-hidden="true" size={16} /></Link>
+            </article>
+          ))}
+        </div>
       </section>
+
+      <section className="mx-auto max-w-[1480px] py-10 sm:py-16" aria-labelledby="quiet-title">
+        <div className="grid gap-4 border-y border-[var(--line)] py-10 sm:grid-cols-2 lg:grid-cols-3 lg:py-14">
+          <div className="lg:col-span-3">
+            <p className="mono-label text-[var(--accent)]">Everything in one place</p>
+            <h2 id="quiet-title" className="display-type mt-3 max-w-2xl text-4xl leading-[.95] sm:text-5xl">No tabs. No spreadsheets. No scattered PDFs.</h2>
+          </div>
+          {quietFeatures.map(({ icon: Icon, label }) => (
+            <div key={label} className="flex items-center gap-4 rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-5">
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]"><Icon aria-hidden="true" size={18} /></span>
+              <p className="font-semibold leading-5">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-[1480px] py-10 sm:py-16" aria-labelledby="cta-title">
+        <div className="surface-card relative overflow-hidden p-8 sm:p-14">
+          <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-[var(--accent-soft)] opacity-70 blur-3xl" aria-hidden="true" />
+          <div className="relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]">
+            <div>
+              <p className="mono-label text-[var(--accent)]">Begin today</p>
+              <h2 id="cta-title" className="display-type mt-3 max-w-xl text-5xl leading-[.92] sm:text-6xl">Open the space that gets you to GATE 2027.</h2>
+              <p className="mt-5 max-w-xl leading-7 text-[var(--muted)]">Sign up with Google or email and start your first focus block in under a minute. Your workspace begins empty and records only your work.</p>
+            </div>
+            <div className="flex flex-wrap gap-3 lg:justify-end">
+              <Link className="primary-button" href="/login">Create free workspace <ArrowRight aria-hidden="true" size={17} /></Link>
+              <Link className="secondary-button" href="/login">Sign in</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="mx-auto flex max-w-[1480px] flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] py-8 text-sm text-[var(--muted)]">
+        <p>© 2026 GATE OS · A private preparation workspace for GATE CS &amp; IT 2027.</p>
+        <nav className="flex items-center gap-5" aria-label="Footer">
+          <Link className="transition hover:text-[var(--accent)]" href="/login">
+            Sign in
+          </Link>
+          <Link className="transition hover:text-[var(--accent)]" href="/login">
+            Create account
+          </Link>
+          <a className="transition hover:text-[var(--accent)]" href="#how">
+            How it works
+          </a>
+        </nav>
+      </footer>
     </main>
   );
 }

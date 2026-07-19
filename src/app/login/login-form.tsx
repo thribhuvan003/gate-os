@@ -5,7 +5,6 @@ import { FormEvent, useMemo, useState } from "react";
 import { getBrowserSupabaseClient, getBrowserSupabaseSetupError } from "@/lib/supabase/client";
 
 type LoginFormProps = {
-  initialInviteCode: string;
   initialError: string;
   nextPath: string;
 };
@@ -18,7 +17,7 @@ function friendlyOtpError(raw: string): string {
   const normalized = raw.toLowerCase();
 
   if (normalized.includes("signups not allowed")) {
-    return "This email does not have a GATE OS account yet. Paste your beta invitation code above, then request the code again.";
+    return "Email signup is temporarily disabled in Supabase. Enable email signups, then try again.";
   }
 
   if (normalized.includes("rate limit") || normalized.includes("too many")) {
@@ -28,36 +27,13 @@ function friendlyOtpError(raw: string): string {
   return raw;
 }
 
-export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFormProps) {
+export function LoginForm({ initialError, nextPath }: LoginFormProps) {
   const setupError = useMemo(() => getBrowserSupabaseSetupError(), []);
-  const [inviteCode, setInviteCode] = useState(initialInviteCode);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<LoginStep>("start");
   const [message, setMessage] = useState(initialError || setupError || "");
   const [isWorking, setIsWorking] = useState(false);
-
-  async function prepareInvite(): Promise<boolean> {
-    const code = inviteCode.trim();
-
-    if (!code) {
-      return true;
-    }
-
-    const response = await fetch("/api/invites/validate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-
-    if (!response.ok) {
-      setMessage(payload.error ?? "We could not validate that invitation code.");
-      return false;
-    }
-
-    return true;
-  }
 
   function callbackUrl() {
     const url = new URL("/auth/callback", window.location.origin);
@@ -70,10 +46,6 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
     setIsWorking(true);
 
     try {
-      if (!(await prepareInvite())) {
-        return;
-      }
-
       const clientResult = await getBrowserSupabaseClient();
 
       if (!clientResult.value) {
@@ -111,10 +83,6 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
     setIsWorking(true);
 
     try {
-      if (!(await prepareInvite())) {
-        return;
-      }
-
       const clientResult = await getBrowserSupabaseClient();
 
       if (!clientResult.value) {
@@ -125,7 +93,7 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
       const { error } = await clientResult.value.auth.signInWithOtp({
         email: email.trim(),
         options: {
-          shouldCreateUser: Boolean(inviteCode.trim()),
+          shouldCreateUser: true,
           emailRedirectTo: callbackUrl(),
         },
       });
@@ -136,7 +104,7 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
       }
 
       setStep("code");
-      setMessage(`We emailed ${email.trim()}. Enter the six-digit code — or tap the sign-in link inside that email.`);
+      setMessage(`We emailed ${email.trim()}. Enter the six-digit code — or use the secure sign-in link in that email.`);
     } catch {
       setMessage("We could not send a code. Check your connection and try again.");
     } finally {
@@ -197,28 +165,22 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
         </div>
 
         <h1 id="login-title" className="text-3xl font-semibold tracking-tight text-[#162826] sm:text-[2.1rem]">Welcome in.</h1>
-        <p className="mt-3 text-[0.98rem] leading-6 text-[#52635f]">A quiet workspace for the work that gets you to GATE 2027.</p>
-
-        <div className="mt-7 rounded-2xl border border-[#d8e2de] bg-[#f7fbf9] p-4">
-          <label htmlFor="invite-code" className="block text-sm font-medium text-[#29433e]">Beta invitation code <span className="font-normal text-[#61706d]">(new members)</span></label>
-          <input id="invite-code" name="invite-code" autoComplete="off" value={inviteCode} onChange={(event) => setInviteCode(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); void startGoogle(); } }} disabled={disabled} placeholder="Paste your invite code" className="mt-2 min-h-11 w-full rounded-xl border border-[#c8d6d0] bg-white px-3 text-base outline-none transition placeholder:text-[#84928f] focus:border-[#176558] focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60" aria-describedby="invite-help" />
-          <p id="invite-help" className="mt-2 text-sm leading-5 text-[#61706d]">Returning beta members can continue without a code. New members need one before their account is opened.</p>
-        </div>
+        <p className="mt-3 text-[0.98rem] leading-6 text-[#52635f]">Sign in or create your free private workspace for GATE 2027.</p>
 
         {message ? <p className="mt-5 rounded-xl border border-[#e9c7b5] bg-[#fff5ef] px-3 py-2.5 text-sm leading-5 text-[#88401f]" role="alert">{message}</p> : null}
 
         {step === "start" ? (
-          <div className="mt-6 space-y-3">
+          <div className="mt-7 space-y-3">
             <button type="button" onClick={startGoogle} disabled={disabled} className="flex min-h-12 w-full items-center justify-center gap-3 rounded-xl bg-[#183f3b] px-4 text-base font-semibold text-white shadow-sm transition hover:bg-[#0e302c] focus:outline-none focus:ring-4 focus:ring-[#9bcfc0] disabled:cursor-not-allowed disabled:opacity-60">
               <span className="grid size-5 place-items-center rounded-full bg-white text-xs font-bold text-[#183f3b]" aria-hidden="true">G</span>
               {isWorking ? "Opening Google…" : "Continue with Google"}
             </button>
-            <button type="button" onClick={() => { setMessage(""); setStep("email"); }} disabled={disabled} className="min-h-12 w-full rounded-xl border border-[#a9bbb5] bg-white px-4 text-base font-semibold text-[#29433e] transition hover:bg-[#f2f7f5] focus:outline-none focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60">Use email instead</button>
+            <button type="button" onClick={() => { setMessage(""); setStep("email"); }} disabled={disabled} className="min-h-12 w-full rounded-xl border border-[#a9bbb5] bg-white px-4 text-base font-semibold text-[#29433e] transition hover:bg-[#f2f7f5] focus:outline-none focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60">Continue with email</button>
           </div>
         ) : null}
 
         {step === "email" ? (
-          <form className="mt-6 space-y-4" onSubmit={requestEmailCode} noValidate>
+          <form className="mt-7 space-y-4" onSubmit={requestEmailCode} noValidate>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-[#29433e]">Email address</label>
               <input id="email" name="email" type="email" inputMode="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} disabled={disabled} placeholder="you@example.com" className="mt-2 min-h-12 w-full rounded-xl border border-[#c8d6d0] bg-white px-3 text-base outline-none transition placeholder:text-[#84928f] focus:border-[#176558] focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60" />
@@ -229,7 +191,7 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
         ) : null}
 
         {step === "code" ? (
-          <form className="mt-6 space-y-4" onSubmit={verifyEmailCode} noValidate>
+          <form className="mt-7 space-y-4" onSubmit={verifyEmailCode} noValidate>
             <div>
               <label htmlFor="otp" className="block text-sm font-medium text-[#29433e]">Six-digit code</label>
               <input id="otp" name="otp" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, ""))} disabled={disabled} placeholder="000000" className="mt-2 min-h-12 w-full rounded-xl border border-[#c8d6d0] bg-white px-3 text-center font-mono text-xl tracking-[0.45em] outline-none transition placeholder:tracking-normal placeholder:text-[#84928f] focus:border-[#176558] focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60" aria-describedby="otp-help" />
@@ -240,7 +202,7 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
           </form>
         ) : null}
 
-        <p className="mt-7 text-center text-xs leading-5 text-[#70807c]">Private by default. Your notes and study materials stay in your own workspace.</p>
+        <p className="mt-7 text-center text-xs leading-5 text-[#70807c]">Private by default. Every account sees only its own notes, progress, files, goals, and sessions.</p>
         <p className="sr-only" aria-live="polite">{isWorking ? "Sign-in in progress" : ""}</p>
       </section>
     </main>

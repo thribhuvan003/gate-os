@@ -1,15 +1,21 @@
 import { redirect } from "next/navigation";
 
 import { WorkspaceShell } from "@/components/os/workspace-shell";
-import { hasActiveBetaAccess } from "@/lib/auth/invite";
+import { getServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const access = await hasActiveBetaAccess();
+  const clientResult = await getServerSupabaseClient();
 
-  if (!access.active) {
-    redirect("/login?error=access");
+  if (!clientResult.value) {
+    redirect("/login?error=setup");
+  }
+
+  const { data } = await clientResult.value.auth.getUser();
+
+  if (!data.user) {
+    redirect("/login?error=session");
   }
 
   return <WorkspaceShell>{children}</WorkspaceShell>;
