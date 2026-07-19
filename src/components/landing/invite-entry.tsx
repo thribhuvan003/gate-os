@@ -27,11 +27,10 @@ export function InviteEntry() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: code.trim() }),
       });
-      const result = (await response.json()) as { valid?: boolean; error?: string; message?: string };
-      if (!response.ok || !result.valid) throw new Error(result.error || result.message || "That invite is not available.");
+      const result = (await response.json()) as { valid?: boolean; message?: string };
+      if (!response.ok || !result.valid) throw new Error(result.message || "That invite is not available.");
       setStatus("Invitation accepted. Opening sign in…");
-      // Carry the validated code to /login so the user never retypes it.
-      router.push(`/login?code=${encodeURIComponent(code.trim())}`);
+      router.push("/login");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Could not validate this invite.");
       setIsError(true);
@@ -44,14 +43,11 @@ export function InviteEntry() {
     <form className="mt-7 max-w-xl" onSubmit={submitInvite} noValidate>
       <label className="field-label" htmlFor="invite-code">
         Invitation code
-        <span className="flex rounded-[16px] border border-[var(--line)] bg-[var(--surface-strong)] p-1.5 shadow-sm transition focus-within:border-[var(--accent)] focus-within:shadow-[0_0_0_4px_var(--accent-soft)]">
+        <span className="flex rounded-[16px] border border-[var(--line)] bg-[var(--surface-strong)] p-1.5 shadow-sm focus-within:border-[var(--accent)]">
           <input
             id="invite-code"
             className="min-h-12 min-w-0 flex-1 bg-transparent px-3 font-mono tracking-[.12em] outline-none"
             autoComplete="one-time-code"
-            inputMode="text"
-            autoCapitalize="characters"
-            spellCheck={false}
             placeholder="GATE-2027-…"
             value={code}
             onChange={(event) => setCode(event.target.value.toUpperCase())}
@@ -63,7 +59,6 @@ export function InviteEntry() {
         </span>
       </label>
       <p id="invite-status" className="status-message mt-3" role="status" data-error={isError}>{status}</p>
-      <p className="mt-3 text-xs text-[var(--muted)]">No invite yet? Mention GATE OS to a beta member or reach out for access.</p>
     </form>
   );
 }
