@@ -1,4 +1,6 @@
+import { createBrowserClient, createServerClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
 
 type DynamicSupabaseClient = SupabaseClient;
 
@@ -34,43 +36,12 @@ export type RuntimeResult<T> =
   | { value: T; error: null }
   | { value: null; error: string };
 
-const dynamicImport = new Function(
-  "moduleName",
-  "return import(moduleName)",
-) as (moduleName: string) => Promise<unknown>;
-
 export async function loadSupabaseSsr(): Promise<RuntimeResult<SupabaseSsrModule>> {
-  try {
-    const loadedModule = (await dynamicImport("@supabase/ssr")) as Partial<SupabaseSsrModule>;
-
-    if (typeof loadedModule.createBrowserClient !== "function" || typeof loadedModule.createServerClient !== "function") {
-      return { value: null, error: "@supabase/ssr is installed but is not a supported version." };
-    }
-
-    return { value: loadedModule as SupabaseSsrModule, error: null };
-  } catch {
-    return {
-      value: null,
-      error: "Authentication packages are missing. Install @supabase/ssr, @supabase/supabase-js, and zod before enabling login.",
-    };
-  }
+  return { value: { createBrowserClient, createServerClient } as unknown as SupabaseSsrModule, error: null };
 }
 
 export async function loadZod(): Promise<RuntimeResult<ZodRuntime>> {
-  try {
-    const loadedModule = (await dynamicImport("zod")) as { z?: ZodRuntime };
-
-    if (!loadedModule.z) {
-      return { value: null, error: "zod is installed but could not be loaded." };
-    }
-
-    return { value: loadedModule.z, error: null };
-  } catch {
-    return {
-      value: null,
-      error: "Authentication validation is unavailable. Install zod before enabling login.",
-    };
-  }
+  return { value: z as unknown as ZodRuntime, error: null };
 }
 
 export type { DynamicSupabaseClient };

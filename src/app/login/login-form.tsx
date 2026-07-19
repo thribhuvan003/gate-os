@@ -187,7 +187,7 @@ export function LoginForm({ initialInviteCode, initialError, nextPath }: LoginFo
 
         <div className="mt-7 rounded-2xl border border-[#d8e2de] bg-[#f7fbf9] p-4">
           <label htmlFor="invite-code" className="block text-sm font-medium text-[#29433e]">Beta invitation code <span className="font-normal text-[#61706d]">(new members)</span></label>
-          <input id="invite-code" name="invite-code" autoComplete="off" value={inviteCode} onChange={(event) => setInviteCode(event.target.value)} disabled={disabled} placeholder="Paste your invite code" className="mt-2 min-h-11 w-full rounded-xl border border-[#c8d6d0] bg-white px-3 text-base outline-none transition placeholder:text-[#84928f] focus:border-[#176558] focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60" aria-describedby="invite-help" />
+          <input id="invite-code" name="invite-code" autoComplete="off" value={inviteCode} onChange={(event) => setInviteCode(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); void startGoogle(); } }} disabled={disabled} placeholder="Paste your invite code" className="mt-2 min-h-11 w-full rounded-xl border border-[#c8d6d0] bg-white px-3 text-base outline-none transition placeholder:text-[#84928f] focus:border-[#176558] focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60" aria-describedby="invite-help" />
           <p id="invite-help" className="mt-2 text-sm leading-5 text-[#61706d]">Returning beta members can continue without a code. New members need one before their account is opened.</p>
         </div>
 
