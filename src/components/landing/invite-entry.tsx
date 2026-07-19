@@ -27,8 +27,8 @@ export function InviteEntry() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: code.trim() }),
       });
-      const result = (await response.json()) as { ok?: boolean; message?: string };
-      if (!response.ok || !result.ok) throw new Error(result.message || "That invite is not available.");
+      const result = (await response.json()) as { valid?: boolean; message?: string };
+      if (!response.ok || !result.valid) throw new Error(result.message || "That invite is not available.");
       setStatus("Invitation accepted. Opening sign in…");
       router.push("/login");
     } catch (error) {
@@ -62,4 +62,3 @@ export function InviteEntry() {
     </form>
   );
 }
-
