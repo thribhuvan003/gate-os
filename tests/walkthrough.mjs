@@ -62,12 +62,20 @@ page.on("pageerror", (e) => errors.push(`uncaught: ${e.message}`));
 
 let userId = null;
 try {
-  // 1. Real UI signup.
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded" });
-  await page.getByRole("tab", { name: "Create account" }).click();
+  // 1. Real UI signup. Switch to the create-account tab, retrying until the
+  //    submit label actually flips — on a cold prod load the tab can be clicked
+  //    before React hydration attaches its handler, so one click is a no-op.
+  await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+  const createButton = page.getByRole("button", { name: "Create my workspace" });
+  for (let attempt = 0; attempt < 5; attempt++) {
+    await page.getByRole("tab", { name: "Create account" }).click();
+    if (await createButton.isVisible().catch(() => false)) break;
+    await page.waitForTimeout(600);
+  }
+  await createButton.waitFor({ state: "visible", timeout: 10000 });
   await page.fill("#email", email);
   await page.fill("#password", password);
-  await page.getByRole("button", { name: "Create my workspace" }).click();
+  await createButton.click();
 
   // First login must land on onboarding.
   await page.waitForURL(/\/onboarding/, { timeout: 20000 });
