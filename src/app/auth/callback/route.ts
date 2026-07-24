@@ -46,8 +46,17 @@ export async function GET(request: NextRequest) {
   const destination = profile?.onboarding_completed_at
     ? nextPath
     : `/onboarding?next=${encodeURIComponent(nextPath)}`;
+
+  // Honor the forwarded host, but derive the scheme rather than assuming https:
+  // behind a proxy the request URL is http, so hardcoding https produced an
+  // https://localhost redirect in local dev (SSL error) and would break any
+  // non-TLS reverse proxy. x-forwarded-proto is the source of truth when set.
   const forwardedHost = request.headers.get("x-forwarded-host");
-  const origin = forwardedHost ? `https://${forwardedHost}` : new URL(request.url).origin;
+  const forwardedProto = request.headers.get("x-forwarded-proto");
+  const requestUrl = new URL(request.url);
+  const origin = forwardedHost
+    ? `${forwardedProto ?? requestUrl.protocol.replace(":", "")}://${forwardedHost}`
+    : requestUrl.origin;
 
   return NextResponse.redirect(new URL(destination, origin));
 }
