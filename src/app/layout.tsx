@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     template: "%s · GATE OS",
   },
   description:
-    "A private, personal operating system for GATE CS & IT 2027 preparation — focus blocks, syllabus, PYQs, notes, revision, and study circles in one calm space.",
+    "A private, personal operating system for GATE CS & IT 2027 preparation — focus blocks, syllabus, notes, revision, and study circles in one calm space.",
   keywords: [
     "GATE 2027",
     "GATE CS",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     siteName: "GATE OS",
     title: "GATE OS — Your preparation, in one space",
     description:
-      "A private study operating system for GATE CS & IT 2027 — syllabus, focus, PYQs, notes, and circles, connected.",
+      "A private study operating system for GATE CS & IT 2027 — syllabus, focus, notes, revision, and circles, connected.",
   },
   twitter: {
     card: "summary_large_image",
@@ -76,6 +76,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       suppressHydrationWarning
     >
       <body>
+        {/* Apply the saved theme/accent/density before first paint. Without this
+            the page renders in the default theme and the real one only lands in
+            a post-hydration effect — a visible flash on every load. This runs
+            synchronously during body parse, so the correct theme is set before
+            anything is painted. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var p=JSON.parse(localStorage.getItem('gate-os-workspace-preferences')||'{}');var d=document.documentElement;if(p.themeId)d.dataset.theme=p.themeId;if(p.accentId)d.dataset.accent=p.accentId;if(p.density)d.dataset.density=p.density;if(p.motion)d.dataset.motion=p.motion;if(p.fontPairId)d.dataset.fontPair=p.fontPairId;}catch(e){}`,
+          }}
+        />
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>

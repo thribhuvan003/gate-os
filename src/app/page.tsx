@@ -28,7 +28,7 @@ const productPillars = [
 
 const quietFeatures = [
   { icon: Target, label: "One intention per block" },
-  { icon: BookOpen, label: "Syllabus, PYQs & notes linked" },
+  { icon: BookOpen, label: "Syllabus, notes & revision linked" },
   { icon: LockKeyhole, label: "Private by default" },
   { icon: Users, label: "Circles that protect your data" },
   { icon: Clock3, label: "Built for the 27-day rhythm" },

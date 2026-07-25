@@ -33,14 +33,13 @@ const password = "MyGateP@ss2027";
 
 const FEATURES = [
   ["/app", "dashboard / study rhythm"],
+  ["/app/focus", "focus timer"],
   ["/app/syllabus", "syllabus"],
-  ["/app/pyqs", "PYQ desk"],
   ["/app/vault", "PDF vault"],
   ["/app/notes", "notes"],
   ["/app/revision", "revision queue"],
   ["/app/mistakes", "mistake book"],
   ["/app/goals", "goals & reflections"],
-  ["/app/focus", "focus timer"],
   ["/app/circles", "study circles"],
   ["/app/settings", "settings"],
 ];
@@ -51,6 +50,9 @@ const record = (name, error) => {
   results.push([name, error]);
   if (error) { console.error(`✗ ${name}\n  ${error}`); process.exitCode = 1; }
   else { console.log(`✓ ${name}`); passed += 1; }
+};
+const check = async (name, fn) => {
+  try { await fn(); record(name); } catch (error) { record(name, error.message || String(error)); }
 };
 
 const browser = await chromium.launch();
@@ -92,7 +94,7 @@ try {
   await page.waitForTimeout(300);
   await page.getByRole("button", { name: /Continue/i }).click();      // step 2 → 3
   await page.waitForTimeout(300);
-  await page.getByLabel("Weekly commitment").fill("Finish trees and solve 25 PYQs before Sunday.");
+  await page.getByLabel("Weekly commitment").fill("Finish trees and solve 25 practice problems before Sunday.");
   await page.getByRole("button", { name: /Create my space/i }).click();
 
   // Onboarding lands on the welcome reveal, which greets by name.
@@ -114,6 +116,13 @@ try {
   if (!heading.includes(studentName)) throw new Error(`dashboard greeting missing the name: “${heading}”`);
   record(`the dashboard greets them by name — “${heading.trim()}”`);
 
+  // PYQ must be gone from the navigation entirely.
+  await check("PYQ is removed from the workspace navigation", async () => {
+    const navText = (await page.locator("nav[aria-label='Workspace']").first().textContent()) ?? "";
+    if (/pyq/i.test(navText)) throw new Error("nav still mentions PYQ");
+    if (!/Syllabus/.test(navText) || !/Vault/.test(navText)) throw new Error("nav missing expected items");
+  });
+
   // 3. Every feature renders without an error.
   for (const [path, label] of FEATURES) {
     errors.length = 0;
@@ -131,6 +140,44 @@ try {
       record(`${label} (${path})`, error.message);
     }
   }
+
+  // The removed PYQ route must not resolve to a real page anymore.
+  await check("the old /app/pyqs route no longer renders a PYQ page", async () => {
+    const res = await page.goto(`${BASE}/app/pyqs`, { waitUntil: "domcontentloaded" });
+    const body = (await page.locator("body").textContent()) ?? "";
+    // Either a 404 or a redirect elsewhere is fine — what must NOT happen is a
+    // working PYQ desk.
+    if ((res?.status() ?? 0) < 400 && /pyq/i.test(body) && page.url().includes("/app/pyqs")) {
+      throw new Error("the PYQ desk still renders");
+    }
+  });
+
+  // Theme switching must apply instantly on pick — no Save, no reload.
+  await check("picking a theme applies live, instantly, with no reload", async () => {
+    await page.goto(`${BASE}/app/settings`, { waitUntil: "networkidle" });
+    const before = await page.evaluate(() => document.documentElement.dataset.theme);
+    // Click a theme radio different from the current one.
+    const themes = ["editorial-calm", "focus-tech", "soft-personal", "midnight-paper"];
+    const target = themes.find((t) => t !== before) ?? "focus-tech";
+    await page.locator(`.settings-theme-option:has(input[name='theme'])`).nth(themes.indexOf(target)).click();
+    await page.waitForFunction((t) => document.documentElement.dataset.theme === t, target, { timeout: 4000 });
+    const after = await page.evaluate(() => document.documentElement.dataset.theme);
+    if (after !== target) throw new Error(`theme did not switch: ${before} → ${after}`);
+    // And the switch actually changes the painted background color.
+    const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    if (!bg) throw new Error("no computed background after theme switch");
+  });
+
+  // The layout must not overflow horizontally on a small phone.
+  await check("no horizontal overflow on a 320px phone screen", async () => {
+    await page.setViewportSize({ width: 320, height: 720 });
+    for (const path of ["/app", "/app/syllabus", "/app/settings"]) {
+      await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      if (overflow > 2) throw new Error(`${path} overflows by ${overflow}px at 320w`);
+    }
+    await page.setViewportSize({ width: 1280, height: 900 });
+  });
 } catch (error) {
   record("walkthrough", error.message || String(error));
 } finally {

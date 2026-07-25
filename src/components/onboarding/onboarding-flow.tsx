@@ -112,7 +112,7 @@ export function OnboardingFlow({ nextPath }: { nextPath: string }) {
             <h1 id="commitment-title" className="display-type mt-3 text-6xl leading-[.9] sm:text-8xl">Give this week one clear promise.</h1>
             <div className="mt-10 grid gap-5">
               <label className="field-label">Current subject<select className="select-field" value={form.currentSubject} onChange={(event) => update("currentSubject", event.target.value)}>{subjects.map((subject) => <option key={subject}>{subject}</option>)}</select></label>
-              <label className="field-label">Weekly commitment<textarea className="textarea-field" value={form.weeklyCommitment} onChange={(event) => update("weeklyCommitment", event.target.value)} placeholder="Example: Finish trees and solve 25 PYQs before Sunday." /></label>
+              <label className="field-label">Weekly commitment<textarea className="textarea-field" value={form.weeklyCommitment} onChange={(event) => update("weeklyCommitment", event.target.value)} placeholder="Example: Finish trees and solve 25 practice problems before Sunday." /></label>
             </div>
           </section>}
         </div>
