@@ -18,10 +18,15 @@ export function NotesWorkspace({ notes, subjectOptions = [], onSave, onCreate }:
   const filteredNotes = useMemo(() => notes.filter((note) => `${note.title} ${note.subject} ${note.content}`.toLowerCase().includes(query.toLowerCase())), [notes, query]);
 
   useEffect(() => {
-    const next = notes.find((note) => note.id === selectedId) ?? notes[0] ?? null;
     const timer = window.setTimeout(() => {
-      setDraft(next);
-      if (next && next.id !== selectedId) setSelectedId(next.id);
+      setDraft((current) => {
+        // Never clobber a note the user is actively creating or editing that is
+        // not persisted yet. Without this, clicking "New note" on a fresh
+        // account created a draft that this effect immediately reset to null —
+        // the editor flashed and vanished, so a first note could never be made.
+        if (current && current.id.startsWith("draft-") && !notes.some((note) => note.id === current.id)) return current;
+        return notes.find((note) => note.id === selectedId) ?? notes[0] ?? null;
+      });
     }, 0);
     return () => window.clearTimeout(timer);
   }, [notes, selectedId]);

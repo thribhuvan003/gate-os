@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:walkthrough": "node tests/walkthrough.mjs",
-    "test:cross-device": "node --env-file=.env.local tests/cross-device.mjs"
+    "test:cross-device": "node --env-file=.env.local tests/cross-device.mjs",
+    "test:interactions": "node tests/interactions.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",
