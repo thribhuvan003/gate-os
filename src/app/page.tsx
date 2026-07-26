@@ -51,17 +51,17 @@ export default function LandingPage() {
     <main id="main-content" className="landing min-h-screen overflow-hidden px-4 pb-16 sm:px-6 lg:px-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
-      <div className="mx-auto flex max-w-[1480px] flex-wrap items-center justify-center gap-x-3 gap-y-1 pt-4 text-center text-xs text-[var(--muted)] sm:pt-5">
+      <div className="mx-auto flex max-w-[1480px] flex-col items-center gap-1 pt-4 text-center text-xs text-[var(--muted)] sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-3 sm:gap-y-1 sm:pt-5">
         <span className="mono-label text-[var(--accent)]">Free private workspace</span>
-        <span aria-hidden="true">·</span>
+        <span aria-hidden="true" className="hidden sm:inline">·</span>
         <span>Built for GATE CS &amp; IT 2027 aspirants</span>
-        <span aria-hidden="true">·</span>
+        <span aria-hidden="true" className="hidden sm:inline">·</span>
         <span>Google or email signup</span>
       </div>
 
       <header className="landing-header mx-auto flex max-w-[1480px] items-center justify-between py-5 sm:py-7">
         <Link className="flex min-h-11 items-center gap-3" href="/" aria-label="GATE OS home">
-          <span className="grid size-9 place-items-center rounded-full bg-[var(--accent)] text-[var(--paper)]" aria-hidden="true">
+          <span className="grid size-9 place-items-center rounded-full bg-[var(--accent)] text-[var(--on-accent)]" aria-hidden="true">
             <CircleCheck aria-hidden="true" size={18} />
           </span>
           <span className="font-bold tracking-[-0.03em]">GATE OS</span>
@@ -111,7 +111,7 @@ export default function LandingPage() {
         <div className="grid gap-8 border-y border-[var(--line)] py-10 lg:grid-cols-[.8fr_1.2fr] lg:py-16">
           <div>
             <p className="mono-label text-[var(--accent)]">Your account, your data</p>
-            <h2 id="start-title" className="display-type mt-3 max-w-lg text-6xl leading-[.9] sm:text-7xl">Make the space yours.</h2>
+            <h2 id="start-title" className="display-type mt-3 max-w-lg text-[length:var(--text-4xl)] leading-[.92]">Make the space yours.</h2>
           </div>
           <div>
             <p className="max-w-2xl text-lg leading-8 text-[var(--muted)]">Create an account with Google or email. Your progress, notes, goals, sessions, and private PDFs follow you across every device where you sign in.</p>
@@ -127,7 +127,7 @@ export default function LandingPage() {
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4 sm:mb-14">
           <div className="max-w-xl">
             <p className="mono-label text-[var(--accent)]">How it works</p>
-            <h2 id="how-title" className="display-type mt-3 text-5xl leading-[.92] sm:text-6xl">Three quiet habits, one calm space.</h2>
+            <h2 id="how-title" className="display-type mt-3 text-[length:var(--text-4xl)] leading-[.92]">Three quiet habits, one calm space.</h2>
           </div>
           <p className="max-w-sm leading-7 text-[var(--muted)]">
             Every part of GATE OS points you to the single most useful next action — and keeps the rest out of your way.
@@ -140,7 +140,7 @@ export default function LandingPage() {
                 <span className="grid size-11 place-items-center rounded-full border border-[var(--line)]"><Icon aria-hidden="true" size={19} /></span>
                 <span className="mono-label text-[var(--muted)]">0{index + 1}</span>
               </div>
-              <h3 className="display-type mt-12 text-4xl leading-none">{title}</h3>
+              <h3 className="display-type mt-8 text-4xl leading-none">{title}</h3>
               <p className="mt-4 leading-7 text-[var(--muted)]">{copy}</p>
               <Link className="quiet-button mt-5 !px-0 text-sm" href={href}>{action} <ArrowRight aria-hidden="true" size={16} /></Link>
             </article>
@@ -150,12 +150,12 @@ export default function LandingPage() {
 
       <section className="mx-auto max-w-[1480px] py-10 sm:py-16" aria-labelledby="quiet-title">
         <div className="grid gap-4 border-y border-[var(--line)] py-10 sm:grid-cols-2 lg:grid-cols-3 lg:py-14">
-          <div className="lg:col-span-3">
+          <div className="sm:col-span-2 lg:col-span-3">
             <p className="mono-label text-[var(--accent)]">Everything in one place</p>
-            <h2 id="quiet-title" className="display-type mt-3 max-w-2xl text-4xl leading-[.95] sm:text-5xl">No tabs. No spreadsheets. No scattered PDFs.</h2>
+            <h2 id="quiet-title" className="display-type mt-3 max-w-2xl text-[length:var(--text-4xl)] leading-[.92]">No tabs. No spreadsheets. No scattered PDFs.</h2>
           </div>
           {quietFeatures.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-4 rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-5">
+            <div key={label} className="flex items-center gap-4 rounded-[var(--radius-md)] border border-[var(--line)] bg-[var(--surface)] p-5">
               <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]"><Icon aria-hidden="true" size={18} /></span>
               <p className="font-semibold leading-5">{label}</p>
             </div>
@@ -169,7 +169,7 @@ export default function LandingPage() {
           <div className="relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]">
             <div>
               <p className="mono-label text-[var(--accent)]">Begin today</p>
-              <h2 id="cta-title" className="display-type mt-3 max-w-xl text-5xl leading-[.92] sm:text-6xl">Open the space that gets you to GATE 2027.</h2>
+              <h2 id="cta-title" className="display-type mt-3 max-w-xl text-[length:var(--text-4xl)] leading-[.92]">Open the space that gets you to GATE 2027.</h2>
               <p className="mt-5 max-w-xl leading-7 text-[var(--muted)]">Sign up with Google or email and start your first focus block in under a minute. Your workspace begins empty and records only your work.</p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">

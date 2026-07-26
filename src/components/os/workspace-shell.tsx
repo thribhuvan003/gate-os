@@ -9,6 +9,7 @@ import {
   Home,
   NotebookPen,
   Settings,
+  ShieldCheck,
   Target,
   Users,
   Send,
@@ -90,7 +91,10 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           })}
         </nav>
         <div className="mt-auto rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-4">
-          <p className="mono-label">Private by default</p>
+          <p className="mono-label flex items-center gap-2">
+            <ShieldCheck aria-hidden="true" size={14} strokeWidth={2} className="text-[var(--accent)]" />
+            Private by default
+          </p>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">Only you can see your notes, files and progress.</p>
         </div>
       </aside>
@@ -105,7 +109,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
             <span className="pointer-events-none absolute inset-y-0 left-0 z-10 w-7 bg-gradient-to-r from-[var(--background)] to-transparent" aria-hidden="true" />
             <nav
               ref={mobileRailRef}
-              className="scrollbar-none flex snap-x snap-mandatory gap-1 overflow-x-auto px-[calc(50vw-2.65rem)] py-2"
+              className="scrollbar-none flex snap-x snap-mandatory gap-2 overflow-x-auto px-[calc(50vw-2.65rem)] py-2.5"
               aria-label="Workspace"
             >
               {destinations.map(({ href, label, icon: Icon }) => {
@@ -116,8 +120,8 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                     href={href}
                     aria-current={active ? "page" : undefined}
                     style={active ? { color: "var(--paper)" } : undefined}
-                    className={`flex min-w-[5.3rem] snap-center flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[0.68rem] font-semibold transition ${
-                      active ? "bg-[var(--ink)] text-[var(--background)]" : "text-[var(--muted)]"
+                    className={`flex min-w-[5.3rem] snap-center flex-col items-center justify-center gap-1 rounded-2xl px-2.5 py-2 text-[length:var(--text-2xs)] font-semibold transition ${
+                      active ? "bg-[var(--ink)] text-[var(--background)]" : "text-[var(--muted)] hover:text-[var(--ink)]"
                     }`}
                   >
                     <Icon aria-hidden="true" size={19} strokeWidth={1.8} />

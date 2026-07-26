@@ -126,18 +126,20 @@ export function FocusTimer({ initialDurationSeconds = 25 * 60, subjectOptions = 
       <header className="workspace-page-header"><div><p className="workspace-eyebrow"><TimerReset aria-hidden="true" /> Focus</p><h1 id="focus-title">Make the next block matter.</h1><p>Choose a clear target, then stay with it.</p></div></header>
       <div className="focus-timer-layout">
         <section className="focus-timer-display">
-          <p role="status" aria-live="polite" aria-atomic="true">{status === "complete" ? "Session complete" : status === "paused" ? "Paused" : status === "running" ? "In focus" : "Ready when you are"}</p>
+          <p role="status" aria-live="polite" aria-atomic="true" className="mono-label opacity-70">{status === "complete" ? "Session complete" : status === "paused" ? "Paused" : status === "running" ? "In focus" : "Ready when you are"}</p>
           <output aria-label={`${remaining} seconds remaining`}>{formattedTime}</output>
           <div className="focus-timer-actions">
             {status === "running" ? <button className="workspace-primary-button" type="button" onClick={pause}><Pause aria-hidden="true" /> Pause</button> : <button className="workspace-primary-button" type="button" onClick={start} disabled={status === "complete"}><Play aria-hidden="true" /> {status === "paused" ? "Resume" : "Begin focus"}</button>}
             <button className="workspace-secondary-button" type="button" onClick={reset}><RotateCcw aria-hidden="true" /> Reset</button>
-            {status !== "idle" && status !== "complete" ? <button className="workspace-text-button" type="button" onClick={finish}><Square aria-hidden="true" /> Finish &amp; save</button> : null}
+            {status !== "idle" && status !== "complete" ? <button className="workspace-text-button hover:-translate-y-px" type="button" onClick={finish}><Square aria-hidden="true" className="size-4" /> Finish &amp; save</button> : null}
           </div>
         </section>
         <form className="focus-timer-setup" onSubmit={(event) => { event.preventDefault(); start(); }}>
-          <fieldset><legend>Session length</legend><div className="workspace-choice-row">{durationOptions.map((minutes) => <button className={`workspace-choice-button${durationSeconds === minutes * 60 ? " is-selected" : ""}`} type="button" key={minutes} aria-pressed={durationSeconds === minutes * 60} onClick={() => chooseDuration(minutes)}>{minutes} min</button>)}</div></fieldset>
-          <label>Subject<select value={subject} onChange={(event) => setSubject(event.target.value)}><option value="">Choose a subject</option>{subjectOptions.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
-          <label>Topic<input value={topic} onChange={(event) => setTopic(event.target.value)} placeholder="For example, deadlocks" /></label>
+          <fieldset><legend>Session length</legend><div className="workspace-choice-row">{durationOptions.map((minutes) => <button className={`workspace-choice-button${durationSeconds === minutes * 60 ? " is-selected" : ""} hover:-translate-y-px`} type="button" key={minutes} aria-pressed={durationSeconds === minutes * 60} onClick={() => chooseDuration(minutes)}>{minutes} min</button>)}</div></fieldset>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label>Subject<select value={subject} onChange={(event) => setSubject(event.target.value)}><option value="">Choose a subject</option>{subjectOptions.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
+            <label>Topic<input value={topic} onChange={(event) => setTopic(event.target.value)} placeholder="For example, deadlocks" /></label>
+          </div>
           <label>What does a good session look like?<textarea value={intention} onChange={(event) => setIntention(event.target.value)} rows={3} placeholder="Solve 10 questions and write down one recurring mistake." /></label>
         </form>
       </div>

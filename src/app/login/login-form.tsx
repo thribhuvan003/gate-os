@@ -117,35 +117,35 @@ export function LoginForm({ initialError, nextPath }: LoginFormProps) {
   const isSignup = mode === "signup";
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f4f2ec] px-4 py-8 text-[#1d2a2a] sm:px-6">
-      <div className="pointer-events-none absolute inset-0 opacity-80 [background:radial-gradient(circle_at_10%_10%,rgba(166,211,196,.48),transparent_27%),radial-gradient(circle_at_90%_82%,rgba(244,199,129,.32),transparent_24%)]" />
-      <section className="relative w-full max-w-md rounded-[2rem] border border-white/80 bg-white/85 p-6 shadow-[0_24px_70px_rgba(36,52,48,.14)] backdrop-blur sm:p-9" aria-labelledby="login-title">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--paper)] px-4 py-8 text-[var(--ink)] sm:px-6">
+      <div className="pointer-events-none absolute inset-0 opacity-80 [background:radial-gradient(circle_at_10%_10%,color-mix(in_srgb,var(--accent)_20%,transparent),transparent_27%),radial-gradient(circle_at_90%_82%,color-mix(in_srgb,var(--accent)_14%,transparent),transparent_24%)]" />
+      <section className="relative w-full max-w-md rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--surface-strong)]/90 p-6 shadow-[var(--shadow)] backdrop-blur sm:p-9" aria-labelledby="login-title">
         <div className="mb-8 flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-2xl bg-[#183f3b] text-lg font-semibold text-white" aria-hidden="true">G</span>
+          <span className="grid size-11 place-items-center rounded-2xl bg-[var(--ink)] text-lg font-semibold text-[var(--paper)]" aria-hidden="true">G</span>
           <div>
-            <p className="text-sm font-semibold tracking-[0.16em] text-[#52706a]">GATE OS</p>
-            <p className="text-sm text-[#61706d]">Your preparation, in your own space.</p>
+            <p className="text-sm font-semibold tracking-[0.16em] text-[var(--muted)]">GATE OS</p>
+            <p className="text-sm text-[var(--muted)]">Your preparation, in your own space.</p>
           </div>
         </div>
 
-        <h1 id="login-title" className="text-3xl font-semibold tracking-tight text-[#162826] sm:text-[2.1rem]">
+        <h1 id="login-title" className="text-3xl font-semibold tracking-tight text-[var(--ink)] sm:text-[2.1rem]">
           {isSignup ? "Create your workspace." : "Welcome back."}
         </h1>
-        <p className="mt-3 text-[0.98rem] leading-6 text-[#52635f]">
+        <p className="mt-3 text-[0.98rem] leading-6 text-[var(--muted)]">
           {isSignup
             ? "One email and a password — your private space for GATE 2027, ready right away."
             : "Sign in to your private GATE 2027 workspace."}
         </p>
 
         {/* Mode toggle */}
-        <div className="mt-6 grid grid-cols-2 gap-1 rounded-2xl border border-[#d3e0da] bg-[#eef4f1] p-1" role="tablist" aria-label="Sign in or create an account">
+        <div className="mt-6 grid grid-cols-2 gap-1 rounded-2xl border border-[var(--line)] bg-[var(--paper-deep)] p-1" role="tablist" aria-label="Sign in or create an account">
           <button
             type="button"
             role="tab"
             aria-selected={!isSignup}
             onClick={() => { setMode("signin"); setMessage(""); }}
             disabled={isWorking}
-            className={`min-h-11 rounded-xl px-4 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-[#b7ded2] ${!isSignup ? "bg-white text-[#183f3b] shadow-sm" : "text-[#52706a] hover:text-[#29433e]"}`}
+            className={`min-h-11 rounded-[var(--radius-sm)] px-4 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-[var(--accent-soft)] ${!isSignup ? "bg-[var(--surface-strong)] text-[var(--ink)] shadow-sm" : "text-[var(--muted)] hover:text-[var(--ink)]"}`}
           >
             Sign in
           </button>
@@ -155,33 +155,33 @@ export function LoginForm({ initialError, nextPath }: LoginFormProps) {
             aria-selected={isSignup}
             onClick={() => { setMode("signup"); setMessage(""); }}
             disabled={isWorking}
-            className={`min-h-11 rounded-xl px-4 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-[#b7ded2] ${isSignup ? "bg-white text-[#183f3b] shadow-sm" : "text-[#52706a] hover:text-[#29433e]"}`}
+            className={`min-h-11 rounded-[var(--radius-sm)] px-4 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-[var(--accent-soft)] ${isSignup ? "bg-[var(--surface-strong)] text-[var(--ink)] shadow-sm" : "text-[var(--muted)] hover:text-[var(--ink)]"}`}
           >
             Create account
           </button>
         </div>
 
-        {message ? <p className="mt-5 rounded-xl border border-[#e9c7b5] bg-[#fff5ef] px-3 py-2.5 text-sm leading-5 text-[#88401f]" role="alert">{message}</p> : null}
+        {message ? <p className="mt-5 rounded-[var(--radius-sm)] border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-2.5 text-sm leading-5 text-[var(--danger)]" role="alert">{message}</p> : null}
 
         <button
           type="button"
           onClick={startGoogle}
           disabled={disabled}
-          className="mt-6 flex min-h-12 w-full items-center justify-center gap-3 rounded-xl border border-[#a9bbb5] bg-white px-4 text-base font-semibold text-[#29433e] shadow-sm transition hover:bg-[#f2f7f5] focus:outline-none focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-3 rounded-[var(--radius-sm)] border border-[var(--line)] bg-[var(--surface-strong)] px-4 text-base font-semibold text-[var(--ink)] shadow-sm transition hover:bg-[var(--surface)] focus:outline-none focus:ring-4 focus:ring-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <span className="grid size-5 place-items-center rounded-full bg-[#183f3b] text-xs font-bold text-white" aria-hidden="true">G</span>
+          <span className="grid size-5 place-items-center rounded-full bg-[var(--ink)] text-xs font-bold text-[var(--paper)]" aria-hidden="true">G</span>
           {isWorking ? "Opening Google…" : "Continue with Google"}
         </button>
 
         <div className="my-6 flex items-center gap-3" aria-hidden="true">
-          <span className="h-px flex-1 bg-[#d7e2dc]" />
-          <span className="text-xs font-medium uppercase tracking-[0.18em] text-[#8a9793]">or</span>
-          <span className="h-px flex-1 bg-[#d7e2dc]" />
+          <span className="h-px flex-1 bg-[var(--line)]" />
+          <span className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--muted)]">or</span>
+          <span className="h-px flex-1 bg-[var(--line)]" />
         </div>
 
         <form className="space-y-4" onSubmit={onSubmit} noValidate>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-[#29433e]">Email address</label>
+            <label htmlFor="email" className="block text-sm font-medium text-[var(--ink)]">Email address</label>
             <input
               id="email"
               name="email"
@@ -192,11 +192,11 @@ export function LoginForm({ initialError, nextPath }: LoginFormProps) {
               onChange={(event) => setEmail(event.target.value)}
               disabled={disabled}
               placeholder="you@example.com"
-              className="mt-2 min-h-12 w-full rounded-xl border border-[#c8d6d0] bg-white px-3 text-base outline-none transition placeholder:text-[#84928f] focus:border-[#176558] focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 min-h-12 w-full rounded-[var(--radius-sm)] border border-[var(--line)] bg-[var(--surface-strong)] px-3 text-base outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-60"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-[#29433e]">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-[var(--ink)]">Password</label>
             <input
               id="password"
               name="password"
@@ -207,32 +207,32 @@ export function LoginForm({ initialError, nextPath }: LoginFormProps) {
               disabled={disabled}
               placeholder={isSignup ? "At least 8 characters" : "Your password"}
               minLength={8}
-              className="mt-2 min-h-12 w-full rounded-xl border border-[#c8d6d0] bg-white px-3 text-base outline-none transition placeholder:text-[#84928f] focus:border-[#176558] focus:ring-4 focus:ring-[#b7ded2] disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 min-h-12 w-full rounded-[var(--radius-sm)] border border-[var(--line)] bg-[var(--surface-strong)] px-3 text-base outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-60"
             />
-            {isSignup ? <p className="mt-2 text-sm text-[#61706d]">Choose 8 characters or more.</p> : null}
+            {isSignup ? <p className="mt-2 text-sm text-[var(--muted)]">Choose 8 characters or more.</p> : null}
           </div>
           <button
             type="submit"
             disabled={disabled}
-            className="min-h-12 w-full rounded-xl bg-[#183f3b] px-4 text-base font-semibold text-white transition hover:bg-[#0e302c] focus:outline-none focus:ring-4 focus:ring-[#9bcfc0] disabled:cursor-not-allowed disabled:opacity-60"
+            className="min-h-12 w-full rounded-[var(--radius-sm)] bg-[var(--ink)] px-4 text-base font-semibold text-[var(--paper)] transition hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--accent-soft)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isWorking ? (isSignup ? "Creating your workspace…" : "Signing in…") : isSignup ? "Create my workspace" : "Sign in"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-[#52635f]">
+        <p className="mt-6 text-center text-sm text-[var(--muted)]">
           {isSignup ? "Already have an account? " : "New to GATE OS? "}
           <button
             type="button"
             onClick={() => { setMode(isSignup ? "signin" : "signup"); setMessage(""); }}
             disabled={isWorking}
-            className="font-semibold text-[#176558] underline decoration-[#9ab9b0] underline-offset-4 focus:outline-none focus:ring-4 focus:ring-[#b7ded2]"
+            className="inline-flex min-h-11 items-center font-semibold text-[var(--accent)] underline decoration-[var(--accent)]/40 underline-offset-4 focus:outline-none focus:ring-4 focus:ring-[var(--accent-soft)]"
           >
             {isSignup ? "Sign in" : "Create a free account"}
           </button>
         </p>
 
-        <p className="mt-6 text-center text-xs leading-5 text-[#70807c]">Private by default. Every account sees only its own notes, progress, files, goals, and sessions.</p>
+        <p className="mt-6 text-center text-xs leading-5 text-[var(--muted)]">Private by default. Every account sees only its own notes, progress, files, goals, and sessions.</p>
         <p className="sr-only" aria-live="polite">{isWorking ? "Working" : ""}</p>
       </section>
     </main>

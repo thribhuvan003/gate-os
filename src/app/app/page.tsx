@@ -56,12 +56,12 @@ export default async function WorkspaceHome() {
       <section className="mt-8 grid gap-4 xl:grid-cols-[1.45fr_0.8fr]">
         <div className="overflow-hidden rounded-[2rem] bg-[var(--ink)] p-6 text-[var(--background)] sm:p-9">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold">NEXT MEANINGFUL ACTION</span>
+            <span className="rounded-full border border-[color-mix(in_srgb,var(--background)_25%,transparent)] px-3 py-1 text-xs font-semibold">NEXT MEANINGFUL ACTION</span>
             <span className="flex items-center gap-2 text-xs opacity-70"><Clock3 size={14} /> 50 min</span>
           </div>
           <h2 className="display-type mt-12 max-w-xl text-4xl leading-[1.02] sm:text-6xl">{currentSubject}</h2>
           <p className="mt-5 max-w-lg text-sm leading-6 opacity-70">Choose a topic and intention. Your workspace begins empty because progress should always be real.</p>
-          <Link className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--accent)] px-5 font-semibold text-white" href="/app/focus">
+          <Link className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--accent)] px-5 font-semibold text-[var(--on-accent)]" href="/app/focus">
             Start a focus session <ArrowRight size={17} />
           </Link>
         </div>
@@ -81,7 +81,7 @@ export default async function WorkspaceHome() {
         </div>
       </section>
 
-      <section className="mt-4 grid gap-4 lg:grid-cols-3">
+      <section className="mt-6 grid gap-4 md:grid-cols-3">
         <article className="surface-card p-6">
           <div className="flex items-center justify-between"><p className="mono-label">Due for revision</p><RotateCcw size={17} className="text-[var(--accent)]" /></div>
           <p className="display-type mt-7 text-5xl">{dueRevisionCount}</p>

@@ -12,6 +12,13 @@
   --accent: #244b36;
   --accent-soft: #dce7dc;
   --soft-accent: var(--accent-soft);
+  /* Readable foreground for text/icons sitting ON the accent color. The four
+     user-pickable accents are all mid-tone, so white reads well on them (see the
+     [data-accent] blocks). The only exceptions are the bright theme-default
+     accents (focus-tech lime, midnight amber), which need a dark foreground and
+     override this in their own theme block. Measured: white on forest 8.6:1,
+     dark on lime 16:1 — vs the 1.9:1 that a blanket paper/ink foreground gave. */
+  --on-accent: #ffffff;
   --signal: #c7ff4f;
   --danger: #a24336;
   --shadow: 0 24px 70px rgba(35, 45, 37, 0.09);
@@ -21,6 +28,31 @@
   --font-display: var(--font-instrument);
   --font-body: var(--font-dm-sans);
   --font-mono: var(--font-ibm-plex-mono);
+
+  /* Shared type scale. Font sizes across the app grew ad hoc (0.68/0.7/0.72/
+     0.78/0.82/0.84rem all meant "small text" in different files) — new work
+     should read from this scale instead of writing another one-off value. */
+  --text-2xs: 0.6875rem;   /* 11px — dense meta labels */
+  --text-xs: 0.75rem;      /* 12px — captions, helper text */
+  --text-sm: 0.875rem;     /* 14px — secondary body, form labels */
+  --text-base: 1rem;       /* 16px — body text */
+  --text-lg: 1.125rem;     /* 18px — emphasized body */
+  --text-xl: 1.375rem;     /* 22px — card/section subheads */
+  --text-2xl: clamp(1.75rem, 1.4rem + 1.4vw, 2.25rem);   /* section h2 */
+  --text-3xl: clamp(2.25rem, 1.7rem + 2.2vw, 3.25rem);   /* page h1 */
+  --text-4xl: clamp(2.75rem, 1.9rem + 3.6vw, 4.75rem);   /* hero display */
+
+  /* Shared spacing scale, 4px base. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
 }
 
 [data-theme="focus-tech"] {
@@ -33,6 +65,9 @@
   --line: rgba(230, 240, 227, 0.13);
   --accent: #c7ff4f;
   --accent-soft: #27351f;
+  /* Lime is bright — needs dark text on it. Overridden back to white below when
+     the user picks one of the mid-tone accents. */
+  --on-accent: #10120c;
   --signal: #c7ff4f;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
 }
@@ -60,13 +95,19 @@
   --line: rgba(242, 237, 225, 0.13);
   --accent: #e7b45b;
   --accent-soft: #3b3122;
+  /* Amber is bright — needs dark text on it. */
+  --on-accent: #17130a;
   --signal: #e7b45b;
 }
 
-[data-accent="indigo"] { --accent: #3f51b5; --accent-soft: #e6e9fb; }
-[data-accent="terracotta"] { --accent: #a24f36; --accent-soft: #f7e3da; }
-[data-accent="forest"] { --accent: #244b36; --accent-soft: #dce7dc; }
-[data-accent="plum"] { --accent: #713f6d; --accent-soft: #f0e3ef; }
+/* The four user-pickable accents are all mid-tone → white foreground reads well
+   on each (indigo 5.9:1, terracotta 4.7:1, forest 8.6:1, plum 6.3:1). Declaring
+   --on-accent here (after the theme blocks) means a picked accent always gets
+   white, even inside the lime/amber themes whose default is dark. */
+[data-accent="indigo"] { --accent: #3f51b5; --accent-soft: #e6e9fb; --on-accent: #ffffff; }
+[data-accent="terracotta"] { --accent: #a24f36; --accent-soft: #f7e3da; --on-accent: #ffffff; }
+[data-accent="forest"] { --accent: #244b36; --accent-soft: #dce7dc; --on-accent: #ffffff; }
+[data-accent="plum"] { --accent: #713f6d; --accent-soft: #f0e3ef; --on-accent: #ffffff; }
 [data-font-pair="modern"] { --font-display: var(--font-dm-sans); --font-body: var(--font-dm-sans); }
 [data-font-pair="humanist"] { --font-display: var(--font-dm-sans); --font-body: var(--font-instrument); }
 
@@ -105,12 +146,16 @@ body::before {
   pointer-events: none;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
 @layer base {
+  /* Kept inside @layer base so Tailwind text-color utilities still win. When
+     this reset was unlayered it beat every `text-[…]` utility on an <a>, so
+     accent links (rendered as Next <Link>/<a>) silently inherited their parent's
+     color instead of their intended on-accent foreground. */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
   button,
   input,
   select,
