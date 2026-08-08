@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { PdfReader } from "@/components/os/pdf-reader";
+import { PdfReader } from "@/components/os/pdf-reader-client";
 import { getServerSupabaseClient } from "@/lib/supabase/server";
 
 export default async function PdfPage({ params }: { params: Promise<{ id: string }> }) {
