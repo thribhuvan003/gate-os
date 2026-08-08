@@ -2,12 +2,24 @@ import { ArrowRight, BookOpen, Check, Clock3, Flame, RotateCcw } from "lucide-re
 import Link from "next/link";
 import { PageHeading } from "@/components/os/page-heading";
 import { getServerSupabaseClient } from "@/lib/supabase/server";
+import { greetingForHour, hourIn, startOfDayIn } from "@/lib/time/zone";
 
-const dateLabel = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
+const DEFAULT_TIMEZONE = "Asia/Kolkata";
+
+/**
+ * Sessions are fetched over a window wide enough to contain local "today" in
+ * any timezone (max offset is ±14h), then filtered against the student's real
+ * day boundary once their profile has loaded. Fetching the profile first to
+ * learn the timezone would have cost an extra sequential round-trip on the
+ * most-visited page in the app.
+ */
+const SESSION_WINDOW_MS = 48 * 60 * 60 * 1000;
+
+function dateLabelIn(timeZone: string): string {
+  return new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone }).format(new Date());
+}
 
 export default async function WorkspaceHome() {
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : hour < 21 ? "Good evening" : "A quiet night";
   const clientResult = await getServerSupabaseClient();
   let displayName = "Aspirant";
   let currentSubject = "Choose your first subject";
@@ -16,25 +28,30 @@ export default async function WorkspaceHome() {
   let completedTopicCount = 0;
   let totalTopicCount = 0;
   let focusedSecondsToday = 0;
+  let timezone = DEFAULT_TIMEZONE;
   if (clientResult.value) {
     const { data: authData } = await clientResult.value.auth.getClaims();
     const userId = authData?.claims?.sub;
     if (userId) {
-      const startOfToday = new Date();
-      startOfToday.setHours(0, 0, 0, 0);
+      const sessionWindowStart = new Date();
+      sessionWindowStart.setTime(sessionWindowStart.getTime() - SESSION_WINDOW_MS);
       const [{ data: profile }, { data: goal }, { count: revisionCount }, { data: versionData }, { data: sessions }] = await Promise.all([
-        clientResult.value.from("profiles").select("display_name,preferred_study_window").eq("id", userId).maybeSingle(),
+        clientResult.value.from("profiles").select("display_name,timezone,preferred_study_window").eq("id", userId).maybeSingle(),
         clientResult.value.from("goals").select("title").eq("user_id", userId).eq("period", "weekly").is("completed_at", null).order("created_at", { ascending: false }).limit(1).maybeSingle(),
         clientResult.value.from("revision_items").select("id", { count: "exact", head: true }).lte("due_on", new Date().toISOString().slice(0, 10)).is("completed_at", null),
         clientResult.value.from("exam_versions").select("id").eq("year", 2027).maybeSingle(),
-        clientResult.value.from("study_sessions").select("elapsed_seconds").eq("status", "completed").gte("ended_at", startOfToday.toISOString()),
+        clientResult.value.from("study_sessions").select("elapsed_seconds,ended_at").eq("status", "completed").gte("ended_at", sessionWindowStart.toISOString()),
       ]);
       displayName = profile?.display_name ?? displayName;
+      timezone = typeof profile?.timezone === "string" && profile.timezone ? profile.timezone : DEFAULT_TIMEZONE;
       const windowData = profile?.preferred_study_window as { currentSubject?: string } | null;
       currentSubject = windowData?.currentSubject ?? currentSubject;
       weeklyCommitment = goal?.title ?? weeklyCommitment;
       dueRevisionCount = revisionCount ?? 0;
-      focusedSecondsToday = (sessions ?? []).reduce((total, session) => total + (session.elapsed_seconds ?? 0), 0);
+      const dayStart = startOfDayIn(timezone).getTime();
+      focusedSecondsToday = (sessions ?? [])
+        .filter((session) => session.ended_at && new Date(session.ended_at).getTime() >= dayStart)
+        .reduce((total, session) => total + (session.elapsed_seconds ?? 0), 0);
 
       if (versionData?.id) {
         const [{ count: progressCount }, { count: catalogCount }] = await Promise.all([
@@ -48,6 +65,8 @@ export default async function WorkspaceHome() {
   }
   const syllabusPercent = totalTopicCount ? Math.round((completedTopicCount / totalTopicCount) * 100) : 0;
   const focusedMinutesToday = Math.round(focusedSecondsToday / 60);
+  const greeting = greetingForHour(hourIn(timezone));
+  const dateLabel = dateLabelIn(timezone);
 
   return (
     <div className="mx-auto max-w-[1340px] px-4 py-6 sm:px-8 sm:py-10">

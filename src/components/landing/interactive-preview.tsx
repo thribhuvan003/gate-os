@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, Check, Pause, Play, RotateCcw } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 function greetingForHour(hour: number) {
   if (hour < 12) return "Good morning";
@@ -12,6 +12,10 @@ function greetingForHour(hour: number) {
 
 const TOTAL_SECONDS = 45 * 60;
 
+const subscribeToNothing = () => () => {};
+const getLocalGreeting = () => greetingForHour(new Date().getHours());
+const getServerGreeting = () => "Good morning";
+
 /**
  * Landing-page interactive preview. Pure client-side state — no account, no
  * persistence — meant to make the product feel alive in one glance.
@@ -21,7 +25,14 @@ export function InteractivePreview() {
   const [elapsed, setElapsed] = useState(0);
   const [topicComplete, setTopicComplete] = useState(false);
   const [revisionReviewed, setRevisionReviewed] = useState(false);
-  const greeting = useMemo(() => greetingForHour(new Date().getHours()), []);
+  // The greeting is time-of-day aware, but this component is prerendered on the
+  // server, where the clock is UTC. Deriving it during render made the server
+  // and client markup disagree and threw React #418 (hydration mismatch) on
+  // every visit. useSyncExternalStore is the API for exactly this: it renders
+  // the server snapshot during SSR and hydration, then the client snapshot, so
+  // the two passes never disagree. The value is a stable string, so the empty
+  // subscribe never needs to fire.
+  const greeting = useSyncExternalStore(subscribeToNothing, getLocalGreeting, getServerGreeting);
   const syllabusPercent = topicComplete ? 43 : 42;
   const revisionCount = revisionReviewed ? 2 : 3;
 
