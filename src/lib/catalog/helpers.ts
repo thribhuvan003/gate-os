@@ -103,7 +103,7 @@ export function validateGateCatalog(catalog: GateCatalog): readonly CatalogValid
   }
 
   const subjectIds = new Set(catalog.subjects.map((subject) => subject.id));
-  const sectionIds = new Set(catalog.sections.map((section) => section.id));
+  const sectionsById = new Map(catalog.sections.map((section) => [section.id, section]));
 
   for (const subject of catalog.subjects) {
     if (subject.examId !== catalog.exam.id) {
@@ -144,12 +144,12 @@ export function validateGateCatalog(catalog: GateCatalog): readonly CatalogValid
   }
 
   for (const topic of catalog.topics) {
-    if (!subjectIds.has(topic.subjectId) || !sectionIds.has(topic.sectionId)) {
+    if (!subjectIds.has(topic.subjectId) || sectionsById.get(topic.sectionId)?.subjectId !== topic.subjectId) {
       issues.push({
         code: "orphan-section",
         entity: "topic",
         id: topic.id,
-        message: "Topic must belong to a catalog subject and section.",
+        message: "Topic must belong to a catalog subject and a section of that subject.",
       });
     }
     if (topic.versionId !== catalog.version.id) {
